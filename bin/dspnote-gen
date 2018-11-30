@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+import sys, logging, dspnote
+
+if len(sys.argv)==1:
+	print('Usage: dspnote-gen <directory>')
+	sys.exit(0)
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format="%(message)s")
+proj = dspnote.Project(sourceDir=sys.argv[1])
+proj.generate()

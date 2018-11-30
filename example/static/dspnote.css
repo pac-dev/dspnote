@@ -1,0 +1,107 @@
+@charset "UTF-8";
+
+body {
+	font-family: Georgia, serif;
+	font-size: 17px;
+	min-width: 710px;
+	position: relative;
+}
+
+p, ul, h1, h2, h3, h4, .figure {
+	margin-left: calc(50% - 350px);/*calc(39% - 286px);*/
+	width: 700px;
+}
+
+p {
+	margin-bottom: 24px;
+	line-height: 29px;
+}
+
+h1, h2 {
+	font-weight: 100;
+	letter-spacing: 0.4px;
+	margin-top: 41px;
+}
+
+h4 {
+	margin-bottom: 0;
+	font-size: inherit;
+	font-weight: inherit;
+}
+
+a {
+	color: #004276;
+}
+
+.figure {
+	border: 3px solid #eee;
+	padding: 0 -10px;
+}
+.figSubPanel {
+	border-top: 3px solid #eee;
+	padding: 20px;
+	font-family: sans-serif;
+	font-size: 14px;
+	text-align: center;
+	position: relative;
+}
+
+.sporthDiagram .figCode, .sporthDiagram .figUrl {
+	display: none;
+}
+
+.sporthDiagram .figDiagram {
+	text-align: center;
+}
+
+.figRun, .figStop {
+	display: inline-block;
+	margin: 8px 10px;
+	padding: 0px 21px;
+	line-height: 26px;
+	color: #444;
+	background-color: #eef;
+	border: 2px solid #888;
+	cursor: pointer;
+}
+
+.figRun::before { content: "▶ run"; }
+.figStop::before { content: "stop"; }
+
+a.figEdit {
+	position: absolute;
+	right: 10px;
+	bottom: 5px;
+	text-decoration: none;
+	color: #777;
+}
+
+.figSliders {
+	position: relative;
+}
+
+.figSliders.off::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background-color: #fffc;
+}
+
+.sliderOut {
+    display: flex;
+	align-items: center;
+	height: 45px;
+}
+
+.sliderOut > * {
+	flex-grow: 1;
+	padding: 9px;
+	width: 33.2%;
+}
+
+.sliderLabel { text-align: right; }
+.sliderDispl { text-align: left; }
+

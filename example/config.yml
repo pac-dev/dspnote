@@ -1,0 +1,11 @@
+# dspnote example configuration file #
+
+urlPrefix: /notes/
+
+### LOCAL PATHS ###
+# can be absolute or relative to this yml
+
+templateDir: templates
+contentDir: content
+staticDir: static
+outDir: out

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>DSPnote Example Note</title>
+		<link rel="stylesheet" type="text/css" href="/notes/static/dspnote.css" charset="utf-8">
+		<!--script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js"></script-->
+		<link rel="stylesheet" href="/notes/static/katex/katex.min.css">
+		<script src="/notes/static/katex/katex.min.js"></script>
+		<script src="/notes/static/katex/auto-render.min.js"></script>
+	</head>
+	<body>
+		<div class=article>
+		<h1>DSPnote Example</h1>
+<p>Content is written in markdown with DSPnote extensions. The following sections describe the extensions.</p>
+<h2>SporthDiagrams</h2>
+<p>Example of a SporthDiagram:</p>
+<div class="figure sporthDiagram">
+    <textarea class="figCode">_exciter_type 9 palias # 0 - 1
+_delay_length 10 palias # 1 - 10, 5 (ms)
+_feedback 11 palias # -1 - 1, 0.7
+_tik var tick _tik set
+
+# feedback scale: (tanh(x*2)*5+x)*0.171818
+_fb var _feedback get dup 2 * tanh 5 * + 0.1718 * _fb set
+
+# exciter
+0.3 noise 1000 butlp
+dup 2 metro 0 0.001 0.01 tenv * _exciter_type get cf
+
+# delay and feedback
+(_fb get) (_delay_length get 0.001 * _tik get 0.03 tport) 0.1 vdelay</textarea>
+    <div class="figDiagram"><img src="delayLine.svg"></div>
+    <div class="figSubPanel">
+        <div class="figRun"></div>
+        <div class="figSliders off">
+
+<div class="sliderOut">
+    <div class="sliderLabel"> </div>
+    <input type="range" class="sliderRange" disabled="">
+    <div class="sliderDispl"> </div>
+</div>
+
+<div class="sliderOut">
+    <div class="sliderLabel"> </div>
+    <input type="range" class="sliderRange" disabled="">
+    <div class="sliderDispl"> </div>
+</div>
+
+<div class="sliderOut">
+    <div class="sliderLabel"> </div>
+    <input type="range" class="sliderRange" disabled="">
+    <div class="sliderDispl"> </div>
+</div>
+
+        </div>
+        <a href="#" class="figEdit">[edit]</a>
+    </div>
+</div>
+
+<p>Another way of representing this type of model is with a <a href="https://en.wikipedia.org/wiki/Linear_difference_equation">difference equation</a>, which can be useful during implementation, as an intermediate step or as reference. In this case the difference equation is:</p>
+<p>$$
+y(n) = x(n-d) + ay(n-d)
+$$</p>
+<h4>where:</h4>
+<ul>
+<li>$y$ is a function representing the output signal, eg. $y(n)$ is the output sample at time $n$</li>
+<li>$x$ is a function representing the input (exciter) signal, eg. $x(n)$ the input sample at time $n$</li>
+<li>$n$ is the current time</li>
+<li>$d$ is the delay length</li>
+<li>$a$ is the feedback</li>
+</ul>
+		</div>
+		<script src="/notes/static/sporthparams.js"></script>
+		<script src="/notes/static/dspnote.js"></script>
+		<script async src="/notes/static/sporthal.js"></script>
+	</body>
+</html>
