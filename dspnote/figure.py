@@ -4,7 +4,23 @@ from markdown.preprocessors import Preprocessor
 from string import Template
 from distutils import dir_util
 
-sporthDiagramTemplate = """
+class SporthDiagram:
+	def __init__(self, src, start, end):
+		self.start = start
+		self.end = end
+		self.data = {
+			'diagram': re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1),
+			'url': re.search( r'(?:^url:\s(.*?)$|$)', src, re.S).group(1) or "#",
+			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
+			'code': re.search( r'^code:\n```\n(.*?)\n```', src, re.M|re.S).group(1),
+		}
+		self.data['code'] = textwrap.dedent(self.data['code'])
+		self.data['placeholders'] = self.placeholder * self.data['code'].count('palias')
+
+	def render(self):
+		return self.template.format(**self.data)
+
+	template = """
 
 <div class="figure sporthDiagram">
 	<textarea class="figCode">{code}</textarea>
@@ -21,30 +37,14 @@ sporthDiagramTemplate = """
 	{caption}
 </div>
 
-"""
+	"""
 
-placeholderTemplate = """
+	placeholder = """
 <div class="sliderOut">
 	<div class="sliderLabel"> </div>
 	<input type="range" class="sliderRange" disabled="">
 	<div class="sliderDispl"> </div>
 </div>
-"""
-
-class SporthDiagram:
-	def __init__(self, src, start, end):
-		self.start = start
-		self.end = end
-		self.data = {
-			'diagram': re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1),
-			'url': re.search( r'(?:^url:\s(.*?)$|$)', src, re.S).group(1) or "#",
-			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
-			'code': re.search( r'^code:\n```\n(.*?)\n```', src, re.M|re.S).group(1),
-		}
-		self.data['code'] = textwrap.dedent(self.data['code'])
-		self.data['placeholders'] = placeholderTemplate * self.data['code'].count('palias')
-	
-	def render(self):
-		return sporthDiagramTemplate.format(**self.data)
+	"""
 
 
