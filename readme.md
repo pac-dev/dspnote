@@ -1,10 +1,8 @@
-# DSPnote: Generate Notebooks with Interactive Figures
+# DSPnote: Create Notebooks with Interactive Figures
 
-DSPnote is a static site generator specialized in creating notebooks with interactive figures. It currently supports the following types of figures:
+DSPnote is a static site generator specialized in creating notebooks with interactive figures. It's mostly implemented as an extension to [python-markdown](https://github.com/Python-Markdown/markdown). It currently supports the following types of figures:
 
 - *SporthDiagram*: an audio processing block diagram, accompanied by a user-defined Sporth script that can be run in-browser, and parameter sliders to control the script.
-
-It's mostly implemented as an extension to [python-markdown](https://github.com/Python-Markdown/markdown).
 
 
 ## Installing and Using
