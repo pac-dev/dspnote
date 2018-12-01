@@ -21,6 +21,9 @@ sporthDiagramTemplate = """
 		<a href="{url}" class="figEdit">[edit]</a>
 	</div>
 </div>
+<div class="figCaption">
+	{caption}
+</div>
 
 """
 
@@ -45,11 +48,8 @@ def nextFigure(content):
 		ret['code'] = textwrap.dedent(ret['code'])
 		ret['placeholders'] = placeholderTemplate * ret['code'].count('palias')
 		ret['diagram'] = re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1)
-		ret['url'] = re.search( r'^url:\s(.*?)$', src, re.M|re.S)
-		if ret['url']:
-			ret['url'] = ret['url'].group(1)
-		else:
-			ret['url'] = "#"
+		ret['url'] = re.search( r'(?:^url:\s(.*?)$|$)', src, re.S).group(1) or "#"
+		ret['caption'] = re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or ""
 	return ret
 
 def renderFigure(figure):

@@ -5,9 +5,10 @@ body {
 	font-size: 17px;
 	min-width: 710px;
 	position: relative;
+	box-sizing: border-box;
 }
 
-p, ul, h1, h2, h3, h4, .figure {
+p, ul, h1, h2, h3, h4, .figure, .figCaption {
 	margin-left: calc(50% - 350px);/*calc(39% - 286px);*/
 	width: 700px;
 }
@@ -17,7 +18,7 @@ p {
 	line-height: 29px;
 }
 
-h1, h2 {
+h1, h2, h3 {
 	font-weight: 100;
 	letter-spacing: 0.4px;
 	margin-top: 41px;
@@ -35,7 +36,7 @@ a {
 
 .figure {
 	border: 3px solid #eee;
-	padding: 0 -10px;
+	margin-top: 40px;
 }
 .figSubPanel {
 	border-top: 3px solid #eee;
@@ -88,6 +89,12 @@ a.figEdit {
 	top: 0;
 	bottom: 0;
 	background-color: #fffc;
+}
+
+.figCaption {
+	padding: 9px 16px;
+	text-align: center;
+	font-size: 15px;
 }
 
 .sliderOut {
