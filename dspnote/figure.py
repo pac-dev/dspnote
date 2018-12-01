@@ -48,23 +48,3 @@ class SporthDiagram:
 		return sporthDiagramTemplate.format(**self.data)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

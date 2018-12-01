@@ -1,5 +1,5 @@
 import sys, os, re, pathlib, yaml
-from.article import Article
+from .article import Article
 from distutils import dir_util
 
 class Project:
