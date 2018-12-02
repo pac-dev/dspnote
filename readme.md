@@ -4,6 +4,8 @@ DSPnote is a static site generator specialized in creating notebooks with intera
 
 - *SporthDiagram*: an audio processing block diagram, accompanied by a user-defined Sporth script that can be run in-browser, and parameter sliders to control the script.
 
+- *Image*: an image with a caption.
+
 
 ## Installing and Using
 

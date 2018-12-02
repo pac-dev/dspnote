@@ -4,7 +4,7 @@ from markdown.preprocessors import Preprocessor
 from string import Template
 from distutils import dir_util
 
-from .figure import SporthDiagram
+from .figure import SporthDiagram, Image
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +17,8 @@ def nextFigure(content):
 	figureType = re.search( r'^figure:\s(.*?)$', src, re.M|re.S).group(1)
 	if (figureType == 'sporthDiagram'):
 		return SporthDiagram(src, start, end)
+	if (figureType == 'image'):
+		return Image(src, start, end)
 
 def withRenderedFigure(content, figure):
 	return content[0:figure.start] + figure.render() + content[figure.end:]

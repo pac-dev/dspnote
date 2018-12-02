@@ -48,3 +48,27 @@ class SporthDiagram:
 	"""
 
 
+class Image:
+	def __init__(self, src, start, end):
+		self.start = start
+		self.end = end
+		self.data = {
+			'image': re.search( r'^image:\s(.*?)$', src, re.M|re.S).group(1),
+			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
+		}
+
+	def render(self):
+		return self.template.format(**self.data)
+
+	template = """
+
+<div class="figure image">
+	<div class="figDiagram"><img src="{image}"></div>
+</div>
+<div class="figCaption">
+	{caption}
+</div>
+
+	"""
+
+
