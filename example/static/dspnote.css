@@ -5,12 +5,15 @@ body {
 	font-size: 17px;
 	min-width: 710px;
 	position: relative;
-	box-sizing: border-box;
 }
 
 p, ul, h1, h2, h3, h4, .figure, .figCaption {
 	margin-left: calc(50% - 350px);/*calc(39% - 286px);*/
 	width: 700px;
+}
+
+h3 {
+	font-size: 18px;
 }
 
 p {
@@ -95,6 +98,7 @@ a.figEdit {
 	padding: 9px 16px;
 	text-align: center;
 	font-size: 15px;
+	box-sizing: border-box;
 }
 
 .sliderOut {
