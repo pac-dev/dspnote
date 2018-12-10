@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>{{title}}</title>
+		<title>{{ meta["title"] }}</title>
 		<link rel="stylesheet" type="text/css" href="{{ res }}dspnote.css" charset="utf-8">
 		<!--script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js"></script-->
 		<link rel="stylesheet" href="{{ res }}katex/katex.min.css">
@@ -13,7 +13,23 @@
 	</head>
 	<body>
 		<div class=article>
-		{{content|safe}}
+			<h1>{{ meta["title"] }}</h1>
+			<div class=subtitle>
+				{{ meta["author"] }}
+				<br>
+				{{ meta["created"] }} {% if "history" in meta %} <a href='{{ meta["history"] }}'>(history)</a> {% endif %}
+				<br>
+			</div>
+			{{content|safe}}
+			<br>
+			<hr>
+			<div class=footer>
+				{% if "source" in meta %} <a href='{{ meta["source"] }}'>[source]</a> {% endif %}
+				&nbsp; 
+				{% if "history" in meta %} <a href='{{ meta["history"] }}'>[history]</a> {% endif %}
+			</div>
+			<br>
+			<br>
 		</div>
 		<script src="{{ res }}sporthparams.js"></script>
 		<script src="{{ res }}dspnote.js"></script>

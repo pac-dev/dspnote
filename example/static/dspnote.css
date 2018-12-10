@@ -2,14 +2,21 @@
 
 body {
 	font-family: Georgia, serif;
-	font-size: 17px;
+	font-size: 16px;
 	min-width: 710px;
 	position: relative;
 }
 
-p, ul, h1, h2, h3, h4, .figure, .figCaption {
+p, ul, h1, h2, h3, h4, .subtitle, .figure, .figCaption, .prelist {
 	margin-left: calc(50% - 350px);/*calc(39% - 286px);*/
 	width: 700px;
+}
+
+h1, h2, h3 {
+	font-weight: 100;
+	letter-spacing: 0.4px;
+	margin-top: 41px;
+	margin-bottom: -1px;
 }
 
 h3 {
@@ -18,23 +25,23 @@ h3 {
 
 p {
 	margin-bottom: 24px;
-	line-height: 29px;
+	line-height: 25px;
 }
 
-h1, h2, h3 {
-	font-weight: 100;
-	letter-spacing: 0.4px;
-	margin-top: 41px;
+a { color: #004276; }
+.links { margin-bottom: 20px; }
+.links li { margin-bottom: 14px; }
+.footer { text-align: center; }
+.prelist { margin-bottom: 0; }
+
+.subtitle {
+	font-size: 14px;
+	margin-bottom: 25px;
 }
 
-h4 {
-	margin-bottom: 0;
-	font-size: inherit;
-	font-weight: inherit;
-}
-
-a {
-	color: #004276;
+.subtitle a, .footer a {
+	color: #5c778d;
+	text-decoration: none;
 }
 
 .figure {
@@ -99,6 +106,7 @@ a.figEdit {
 	text-align: center;
 	font-size: 15px;
 	box-sizing: border-box;
+	color: #777;
 }
 
 .sliderOut {

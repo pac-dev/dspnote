@@ -3,6 +3,7 @@ from markdown.extensions import Extension
 from markdown.preprocessors import Preprocessor
 from string import Template
 from distutils import dir_util
+from html import escape
 
 from .figure import SporthDiagram, Image
 
@@ -49,13 +50,14 @@ class Article:
 		self.outPath = self.outDir / "index.html"
 	
 	def generate(self):
-		md = markdown.Markdown(extensions = ['meta', FigureExtension()])
+		md = markdown.Markdown(extensions = ['meta', 'extra', FigureExtension()])
 		content = md.convert(self.src)
+		md.Meta["author"][0] = escape(md.Meta["author"][0])
 		templateEnv = jinja2.Environment(loader = jinja2.FileSystemLoader(str(self.config["templateDir"])))
 		template = templateEnv.get_template("article.jinja")
 		templateData = {
 			"content": content,
-			"title": md.Meta["title"][0],
+			"meta": {k : v[0] for k, v in  md.Meta.items()},
 			"res": self.config["publicResPath"],
 			"config": self.config,
 		}
