@@ -51,12 +51,6 @@ function stopFig(fig)
 	setPlayingStyle(fig.ele, false);
 }
 
-function editFig(fig)
-{
-	var win = window.open("https://audiomasher.org/new?script="+encodeURIComponent(fig.code), '_blank');
-	win.focus();
-}
-
 //document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('load', function(){
 	var allSporthDiagrams = document.querySelectorAll(".sporthDiagram");
@@ -75,10 +69,8 @@ window.addEventListener('load', function(){
 			else
 				runFig(fig);
 		});
-		fig.editLink.addEventListener("click", function(e) {
-			e.preventDefault();
-			editFig(fig);
-		});
+		fig.editLink.href = "https://audiomasher.org/new?script="+encodeURIComponent(fig.code);
+		fig.editLink.target = "_blank";
 		setPlayingStyle(ele, runningFig == fig);
 	});
 });
