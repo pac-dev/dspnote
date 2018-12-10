@@ -1,15 +1,32 @@
 @charset "UTF-8";
 
+html { height:100%; min-width: 440px; }
+/* disable font boosting -_- */
+html body * {max-height:1000000px;}
+
 body {
+	margin: 0;
+	padding: 0;
 	font-family: Georgia, serif;
 	font-size: 16px;
-	min-width: 710px;
+	min-width: 440px;
 	position: relative;
+	height: 100%;
+}
+
+.article {
+	text-align: center;
+	padding: 0 10px;
 }
 
 p, ul, h1, h2, h3, h4, .subtitle, .figure, .figCaption, .prelist {
-	margin-left: calc(50% - 350px);/*calc(39% - 286px);*/
-	width: 700px;
+	text-align: left;
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+img {
+	max-width: 100%;
 }
 
 h1, h2, h3 {
