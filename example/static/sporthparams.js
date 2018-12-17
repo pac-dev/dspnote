@@ -1,9 +1,10 @@
-
+var sporth;
 var num = String.raw`(-?\d+(?:\.\d+)?)`;
 var re = new RegExp(String.raw`_([\w]+) (\d+) palias ?# ?${num} - ${num},? ?${num}? ?\(?([\w]+)?\)?`, 'g');
+
 var setP = function(i, p)
 {
-	if (typeof sporthal_setp !== 'undefined') sporthal_setp(i, p);
+	if (typeof sporth.setp !== 'undefined') sporth.setp(i, p);
 }
 
 var createSlider = function(container, param, values)
@@ -41,7 +42,7 @@ var createSlider = function(container, param, values)
 	values[param.name] = slider.value;
 }
 
-function sporthParam_createSliders(container, script, values = {})
+export function createSliders(container, script, values = {})
 {
 	container.innerHTML = '';
 	while(true) {
@@ -65,7 +66,7 @@ function sporthParam_createSliders(container, script, values = {})
 	return values;
 }
 
-function sporthParam_setPvalues(script, values)
+export function setPvalues(script, values)
 {
 	while(true) {
 		var match = re.exec(script);
@@ -84,4 +85,9 @@ function sporthParam_setPvalues(script, values)
 			param.value = param.min;
 		setP(param.index, param.value);
 	}
+}
+
+export function init(sp)
+{
+	sporth = sp;
 }
