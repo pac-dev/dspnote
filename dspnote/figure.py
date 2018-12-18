@@ -47,6 +47,47 @@ class SporthDiagram:
 </div>
 	"""
 
+class ShaderFig:
+	def __init__(self, src, start, end):
+		self.start = start
+		self.end = end
+		self.data = {
+			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
+			'animated': re.search( r'(?:\animated:\s(.*?)\n|$)', src, re.S).group(1) or "false",
+			'code': re.search( r'^code:\n```\n(.*?)\n```', src, re.M|re.S).group(1),
+		}
+		self.data['placeholders'] = self.placeholder * self.data['code'].count('dspnote param: ')
+
+	def render(self):
+		return self.template.format(**self.data)
+
+	template = """
+
+<div class="figure shaderFig">
+	<textarea class="figCode">{code}</textarea>
+	<input type="hidden" name="animated" value="{animated}">
+	<canvas>canvas</canvas>
+	<div class="figSubPanel">
+		<div class="figRun"></div>
+		<div class="figSliders">
+		{placeholders}
+		</div>
+	</div>
+</div>
+<div class="figCaption">
+	{caption}
+</div>
+
+	"""
+
+	placeholder = """
+<div class="sliderOut">
+	<div class="sliderLabel"> </div>
+	<input type="range" class="sliderRange">
+	<div class="sliderDispl"> </div>
+</div>
+	"""
+
 
 class Image:
 	def __init__(self, src, start, end):

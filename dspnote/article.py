@@ -5,7 +5,7 @@ from string import Template
 from distutils import dir_util
 from html import escape
 
-from .figure import SporthDiagram, Image
+from .figure import SporthDiagram, ShaderFig, Image
 
 log = logging.getLogger(__name__)
 
@@ -18,6 +18,8 @@ def nextFigure(content):
 	figureType = re.search( r'^figure:\s(.*?)$', src, re.M|re.S).group(1)
 	if (figureType == 'sporthDiagram'):
 		return SporthDiagram(src, start, end)
+	if (figureType == 'shaderFig'):
+		return ShaderFig(src, start, end)
 	if (figureType == 'image'):
 		return Image(src, start, end)
 

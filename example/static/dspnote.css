@@ -74,12 +74,19 @@ a { color: #004276; }
 	position: relative;
 }
 
-.sporthDiagram .figCode, .sporthDiagram .figUrl {
+.figure .figCode, .figure .figUrl {
 	display: none;
 }
 
 .sporthDiagram .figDiagram {
 	text-align: center;
+}
+
+.shaderFig { text-align: center; }
+
+.shaderFig canvas {
+	width: 450px;
+	height: 450px;
 }
 
 .figRun, .figStop {
