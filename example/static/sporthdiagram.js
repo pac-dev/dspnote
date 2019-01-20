@@ -67,7 +67,8 @@ export function createAll(ele, figLock)
 			else
 				runFig(fig);
 		});
-		fig.editLink.href = "https://audiomasher.org/new?script="+encodeURIComponent(fig.code);
+		if (fig.editLink.attributes.href.value == "#")
+			fig.editLink.href = "https://audiomasher.org/new?script="+encodeURIComponent(fig.code);
 		fig.editLink.target = "_blank";
 		setPlayingStyle(ele, lock.runningFig == fig);
 	});

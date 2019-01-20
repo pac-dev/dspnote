@@ -5,12 +5,10 @@ from string import Template
 from distutils import dir_util
 
 class SporthDiagram:
-	def __init__(self, src, start, end):
-		self.start = start
-		self.end = end
+	def __init__(self, src):
 		self.data = {
 			'diagram': re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1),
-			'url': re.search( r'(?:^url:\s(.*?)$|$)', src, re.S).group(1) or "#",
+			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'code': re.search( r'^code:\n```\n(.*?)\n```', src, re.M|re.S).group(1),
 		}
@@ -48,9 +46,7 @@ class SporthDiagram:
 	"""
 
 class ShaderFig:
-	def __init__(self, src, start, end):
-		self.start = start
-		self.end = end
+	def __init__(self, src):
 		self.data = {
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'animated': re.search( r'(?:\animated:\s(.*?)\n|$)', src, re.S).group(1) or "false",
@@ -90,9 +86,7 @@ class ShaderFig:
 
 
 class Image:
-	def __init__(self, src, start, end):
-		self.start = start
-		self.end = end
+	def __init__(self, src):
 		self.data = {
 			'image': re.search( r'^image:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",

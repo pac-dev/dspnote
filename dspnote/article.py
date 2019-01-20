@@ -9,34 +9,22 @@ from .figure import SporthDiagram, ShaderFig, Image
 
 log = logging.getLogger(__name__)
 
-def nextFigure(content):
-	start = content.find('\nfigure: ')
-	end = content.find('\n\n', start)
-	if (start == -1 or end == -1):
-		return False
-	src = content[start : end]
+def renderFigureMatch(match):
+	src = match.group()
 	figureType = re.search( r'^figure:\s(.*?)$', src, re.M|re.S).group(1)
 	if (figureType == 'sporthDiagram'):
-		return SporthDiagram(src, start, end)
+		fig = SporthDiagram(src)
 	if (figureType == 'shaderFig'):
-		return ShaderFig(src, start, end)
+		fig = ShaderFig(src)
 	if (figureType == 'image'):
-		return Image(src, start, end)
-
-def withRenderedFigure(content, figure):
-	return content[0:figure.start] + figure.render() + content[figure.end:]
+		fig = Image(src)
+	return '\n' + fig.render() + '\n'
 
 class FigurePreprocessor(Preprocessor):
 	def run(self, lines):
 		content = "\n".join(lines)
-		while (True):
-			figure = nextFigure(content)
-			if (figure):
-				content = withRenderedFigure(content, figure)
-			else:
-				break
+		content = re.sub(r'^figure:\s(.*?)\n\n', renderFigureMatch, content, 0, re.M|re.S)
 		return content.split("\n")
-
 
 class FigureExtension(markdown.Extension):
 	def extendMarkdown(self, md, md_globals):

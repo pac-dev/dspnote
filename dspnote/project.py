@@ -9,7 +9,7 @@ class Project:
 		self.config = self.parseConfig()
 		self.config["publicResPath"] = self.config["urlPrefix"] + "static/"
 		artPaths = self.config["contentDir"].glob("*.md")
-		self.arts = [Article(self.config,path) for path in artPaths]
+		self.arts = [Article(self.config, path) for path in artPaths]
 	
 	def parseConfig(self):
 		configFile = open(self.configFilePath)
