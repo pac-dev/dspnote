@@ -50,8 +50,12 @@ class ShaderFig:
 		self.data = {
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'animated': re.search( r'(?:\animated:\s(.*?)\n|$)', src, re.S).group(1) or "false",
-			'code': re.search( r'^code:\n```\n(.*?)\n```', src, re.M|re.S).group(1),
 		}
+		cmatch = re.search( r'\ncode:\n```\n(.*?)\n```', src, re.M|re.S)
+		if (cmatch):
+			self.data['code'] = cmatch.group(1)
+		else:
+			self.data['code'] = "((file: " + re.search( r'\ncode:\s(.*?)\n', src).group(1) + "))"
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('dspnote param: ')
 
 	def render(self):

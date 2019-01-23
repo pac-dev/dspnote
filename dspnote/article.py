@@ -38,11 +38,16 @@ class Article:
 		self.src = self.srcpath.read_text()
 		self.outDir = pathlib.Path(config["outDir"]) / self.basename
 		self.outPath = self.outDir / "index.html"
+		self.assetsDir = self.srcpath.parent / self.basename
 	
 	def generate(self):
 		md = markdown.Markdown(extensions = ['meta', 'extra', FigureExtension()])
 		content = md.convert(self.src)
 		md.Meta["author"][0] = escape(md.Meta["author"][0])
+		def renderFileMatch(match):
+			match = match.group(1)
+			return (self.assetsDir / match).read_text()
+		content = re.sub(r'\(\(file:\s(.*?)\)\)', renderFileMatch, content)
 		templateEnv = jinja2.Environment(loader = jinja2.FileSystemLoader(str(self.config["templateDir"])))
 		template = templateEnv.get_template("article.jinja")
 		templateData = {
@@ -55,6 +60,5 @@ class Article:
 		index = codecs.open(self.outPath, 'w+', "utf-8")
 		index.write(template.render(templateData))
 		index.close()
-		assetsDir = self.srcpath.parent / self.basename
-		if assetsDir.is_dir():
-			dir_util.copy_tree(str(assetsDir), str(self.outDir))
+		if self.assetsDir.is_dir():
+			dir_util.copy_tree(str(self.assetsDir), str(self.outDir))
