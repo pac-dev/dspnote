@@ -57,6 +57,7 @@ function initFig(fig)
 	fig.gl = gl;
 	
 	fig.timeLoc = gl.getUniformLocation(fig.shaderProgram, 'time');
+	fig.resLoc = gl.getUniformLocation(fig.shaderProgram, 'res');
 	for (const [k, v] of Object.entries(fig.params)) {
 		v.loc = gl.getUniformLocation(fig.shaderProgram, v.name);
 	}
@@ -64,6 +65,9 @@ function initFig(fig)
 
 function renderFrame(fig)
 {
+	fig.canvas.width = fig.canvas.offsetWidth;
+	fig.canvas.height = fig.canvas.offsetHeight;
+
 	var gl = fig.gl;
 	gl.viewport(0, 0, fig.canvas.width, fig.canvas.height);
 	gl.clearColor(0.8, 0.9, 1.0, 1.0);
@@ -76,6 +80,7 @@ function renderFrame(fig)
 	gl.vertexAttribPointer(vertPos, 2, gl.FLOAT, false, 0, 0);
 	
 	gl.uniform1f(fig.timeLoc, fig.time);
+	gl.uniform2f(fig.resLoc, fig.canvas.width, fig.canvas.height);
 	for (const [k, v] of Object.entries(fig.params)) {
 		gl.uniform1f(v.loc, v.value);
 	}
@@ -84,7 +89,53 @@ function renderFrame(fig)
 }
 
 var num = String.raw`(-?\d+(?:\.\d+)?)`;
-var re = new RegExp(String.raw`uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?`, 'g');
+var re = new RegExp(String.raw`^uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
+function createSlider(fig, match)
+{
+	var param = {
+		name: match[1],
+		min: match[2],
+		max: match[3],
+	};
+	if (match[4] !== undefined)
+		param.value = match[4];
+	else
+		param.value = param.min;
+
+	fig.params[param.name] = param;
+	
+	var paramDiv = document.createElement("div");
+	paramDiv.className = "sliderOut";
+	
+	var label = document.createElement("div");
+	label.innerHTML = param.name.replace(/_/g, ' ') + ":";
+	label.className = "sliderLabel";
+	paramDiv.appendChild(label);
+	
+	var slider = document.createElement("input");
+	slider.type = "range";
+	slider.min = param.min;
+	slider.max = param.max;
+	slider.step = (param.max - param.min) / 1000;
+	slider.className = "sliderRange";
+	paramDiv.appendChild(slider);
+	
+	var displ = document.createElement("div");
+	displ.innerHTML = param.value;
+	displ.className = "sliderDispl";
+	paramDiv.appendChild(displ);
+	
+	fig.slidersDiv.appendChild(paramDiv);
+	
+	slider.addEventListener('input', function(event) {
+		param.value = slider.value;
+		displ.innerHTML = slider.value;
+		fig.dirty = true;
+	});
+	
+	slider.value = param.value;
+}
+
 function createSliders(fig)
 {
 	// uniform float vari; //dspnote param: 0 - 1
@@ -92,49 +143,7 @@ function createSliders(fig)
 	while(true) {
 		var match = re.exec(fig.code);
 		if (!match) break;
-		var param = {
-			name: match[1],
-			min: match[2],
-			max: match[3],
-		};
-		if (match[4] !== undefined)
-			param.value = match[4];
-		else
-			param.value = param.min;
-
-		fig.params[param.name] = param;
-		
-		var paramDiv = document.createElement("div");
-		paramDiv.className = "sliderOut";
-		
-		var label = document.createElement("div");
-		label.innerHTML = param.name.replace(/_/g, ' ') + ":";
-		label.className = "sliderLabel";
-		paramDiv.appendChild(label);
-		
-		var slider = document.createElement("input");
-		slider.type = "range";
-		slider.min = param.min;
-		slider.max = param.max;
-		slider.step = (param.max - param.min) / 1000;
-		slider.className = "sliderRange";
-		paramDiv.appendChild(slider);
-		
-		var displ = document.createElement("div");
-		displ.innerHTML = param.value;
-		displ.className = "sliderDispl";
-		paramDiv.appendChild(displ);
-		
-		fig.slidersDiv.appendChild(paramDiv);
-		
-		slider.addEventListener('input', function(event) {
-			param.value = slider.value;
-			displ.innerHTML = slider.value;
-			fig.dirty = true;
-		});
-		
-		slider.value = param.value;
-		
+		createSlider(fig, match);
 	}
 }
 
