@@ -88,6 +88,15 @@ function renderFrame(fig)
 	gl.drawArrays(gl.TRIANGLES, 0, fig.vertexCount);
 }
 
+function prettyParamName(s)
+{
+	s = s.replace(/_/g, ' ');
+	s = s.replace(/\brho\b/g, 'ρ');
+	s = s.replace(/\btheta\b/g, 'θ');
+	s = s.replace(/\bphi\b/g, 'φ');
+	return s;
+}
+
 var num = String.raw`(-?\d+(?:\.\d+)?)`;
 var re = new RegExp(String.raw`^uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
 function createSlider(fig, match)
@@ -108,7 +117,7 @@ function createSlider(fig, match)
 	paramDiv.className = "sliderOut";
 	
 	var label = document.createElement("div");
-	label.innerHTML = param.name.replace(/_/g, ' ') + ":";
+	label.innerHTML = prettyParamName(param.name) + ":";
 	label.className = "sliderLabel";
 	paramDiv.appendChild(label);
 	
