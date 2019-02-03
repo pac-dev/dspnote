@@ -79,7 +79,7 @@ function renderFrame(fig)
 	gl.enableVertexAttribArray(vertPos);
 	gl.vertexAttribPointer(vertPos, 2, gl.FLOAT, false, 0, 0);
 	
-	gl.uniform1f(fig.timeLoc, fig.time);
+	gl.uniform1f(fig.timeLoc, fig.time*0.001);
 	gl.uniform2f(fig.resLoc, fig.canvas.width, fig.canvas.height);
 	for (const [k, v] of Object.entries(fig.params)) {
 		gl.uniform1f(v.loc, v.value);
@@ -205,7 +205,6 @@ export function createAll(ele, figLock)
 			slidersDiv: ele.querySelector(".figSliders"),
 			runButton: ele.querySelector(".figRun"),
 			canvas: ele.querySelector("canvas"),
-			animated: (ele.querySelector("input").value == "true"),
 			time: 0,
 			previousTime: performance.now(),
 			timeDiff: 0,

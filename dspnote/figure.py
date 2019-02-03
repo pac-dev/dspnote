@@ -20,7 +20,7 @@ class SporthDiagram:
 
 	template = """
 
-<div class="figure sporthDiagram">
+<div class="figure runnable sporthDiagram">
 	<textarea class="figCode">{code}</textarea>
 	<div class="figDiagram"><img src="{diagram}"></div>
 	<div class="figSubPanel">
@@ -49,7 +49,7 @@ class ShaderFig:
 	def __init__(self, src):
 		self.data = {
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
-			'animated': re.search( r'(?:\animated:\s(.*?)\n|$)', src, re.S).group(1) or "false",
+			'runnable': re.search( r'(?:\nrunnable:\s(.*?)\n|$)', src, re.S).group(1) or "false",
 		}
 		cmatch = re.search( r'\ncode:\n```\n(.*?)\n```', src, re.M|re.S)
 		if (cmatch):
@@ -57,15 +57,15 @@ class ShaderFig:
 		else:
 			self.data['code'] = "((file: " + re.search( r'\ncode:\s(.*?)\n', src).group(1) + "))"
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('dspnote param: ')
+		self.data['runnableClass'] = 'runnable' if self.data['runnable']=='true' else ""
 
 	def render(self):
 		return self.template.format(**self.data)
 
 	template = """
 
-<div class="figure shaderFig">
+<div class="figure shaderFig {runnableClass}">
 	<textarea class="figCode">{code}</textarea>
-	<input type="hidden" name="animated" value="{animated}">
 	<canvas>canvas</canvas>
 	<div class="figSubPanel">
 		<div class="figRun"></div>

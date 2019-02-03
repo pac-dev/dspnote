@@ -92,7 +92,7 @@ a { color: #004276; }
 }
 
 .figRun, .figStop {
-	display: inline-block;
+	display: none;
 	margin: 8px 10px;
 	padding: 0px 21px;
 	line-height: 26px;
@@ -104,6 +104,9 @@ a { color: #004276; }
 
 .figRun::before { content: "▶ run"; }
 .figStop::before { content: "stop"; }
+.figure.runnable .figRun, .figure.runnable .figStop {
+	display: inline-block;
+}
 
 a.figEdit {
 	position: absolute;
@@ -132,7 +135,7 @@ a.figEdit {
 	text-align: center;
 	font-size: 15px;
 	box-sizing: border-box;
-	color: #777;
+	font-style: italic;
 }
 
 .sliderOut {
