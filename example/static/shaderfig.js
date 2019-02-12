@@ -194,6 +194,21 @@ function setPlayingStyle(ele, playing)
 	ele.querySelector(".figRun, .figStop").className = playing ? "figStop" : "figRun";
 }
 
+function setFull(fig)
+{
+	var fullParent = document.getElementById("fullParent");
+	fullParent.classList.toggle("fullEnabled", true);
+	fullParent.prepend(fig.canvas);
+	var fullOff = function() {
+		fig.ele.prepend(fig.canvas);
+		fullParent.classList.toggle("fullEnabled", false);
+		fullParent.removeEventListener("click", fullOff);
+		fig.dirty = true;
+	}
+	fullParent.addEventListener("click", fullOff);
+	fig.dirty = true;
+}
+
 export function createAll(ele, figLock)
 {
 	lock = figLock;
@@ -205,6 +220,7 @@ export function createAll(ele, figLock)
 			slidersDiv: ele.querySelector(".figSliders"),
 			runButton: ele.querySelector(".figRun"),
 			canvas: ele.querySelector("canvas"),
+			fullLink: ele.querySelector(".figFull"),
 			time: 0,
 			previousTime: performance.now(),
 			timeDiff: 0,
@@ -216,6 +232,13 @@ export function createAll(ele, figLock)
 				stopFig(fig);
 			else
 				runFig(fig);
+		});
+		fig.fullLink.addEventListener("click", function(e) {
+			e.preventDefault();
+			setFull(fig, true);
+		});
+		window.addEventListener("resize", function(e) {
+			fig.dirty = true;
 		});
 		setPlayingStyle(ele, lock.runningFig == fig);
 		createSliders(fig);

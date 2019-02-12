@@ -108,7 +108,7 @@ a { color: #004276; }
 	display: inline-block;
 }
 
-a.figEdit {
+a.figEdit, a.figFull {
 	position: absolute;
 	right: 10px;
 	bottom: 5px;
@@ -153,3 +153,23 @@ a.figEdit {
 .sliderLabel { text-align: right; }
 .sliderDispl { text-align: left; }
 
+#fullParent {
+	display: none;
+	position: fixed;
+	cursor: pointer;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 5%;
+	background-color: #000c;
+}
+
+#fullParent.fullEnabled {
+	display: block;
+}
+
+#fullParent canvas {
+	width: 100%;
+	height: 100%;
+}

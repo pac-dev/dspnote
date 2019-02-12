@@ -72,6 +72,7 @@ class ShaderFig:
 		<div class="figSliders">
 		{placeholders}
 		</div>
+		<a href="#" class="figFull">[full]</a>
 	</div>
 </div>
 <div class="figCaption">
