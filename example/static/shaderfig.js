@@ -156,13 +156,22 @@ function createSliders(fig)
 	}
 }
 
+function isElementInViewport(el) {
+    var rect = el.getBoundingClientRect();
+    return (
+		rect.bottom > 10 && rect.right > 10 &&
+        rect.left < (window.innerWidth || document.documentElement.clientWidth)-10 &&
+		rect.top < (window.innerHeight || document.documentElement.clientHeight)-10
+	);
+}
+
 function animate(fig) {
-	if (lock.runningFig == fig || fig.dirty) {
+	if (isElementInViewport(fig.canvas) && (lock.runningFig == fig || fig.dirty)) {
 		fig.dirty = false;
 		fig.time += fig.timeDiff;
 		renderFrame(fig);
 	}
-	window.requestAnimationFrame(function(currentTime) {
+	requestAnimationFrame(function(currentTime) {
 		fig.timeDiff = (lock.runningFig == fig) ? currentTime - fig.previousTime : 0;
 		fig.previousTime = currentTime;
 		animate(fig);
@@ -174,17 +183,12 @@ function runFig(fig)
 	if (lock.runningFig != null) {
 		stopFig(lock.runningFig);
 	}
-	
-	//...
-	
 	lock.runningFig = fig;
 	setPlayingStyle(fig.ele, true);
 }
 
 function stopFig(fig)
 {
-	//...
-	
 	lock.runningFig = null;
 	setPlayingStyle(fig.ele, false);
 }
