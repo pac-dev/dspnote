@@ -2,10 +2,10 @@ var lock;
 
 var vertexCode = `
 	attribute vec2 vertPos;
-	varying vec2 fragPos;
+	varying vec2 iUV;
 	void main() {
 		gl_Position = vec4(vertPos, 0.0, 1.0);
-		fragPos = vertPos;
+		iUV = vertPos * 0.5 + 0.5;
 	}
 `
 
@@ -56,8 +56,8 @@ function initFig(fig)
 	fig.vertexCount = vertexArray.length/2;
 	fig.gl = gl;
 	
-	fig.timeLoc = gl.getUniformLocation(fig.shaderProgram, 'time');
-	fig.resLoc = gl.getUniformLocation(fig.shaderProgram, 'res');
+	fig.timeLoc = gl.getUniformLocation(fig.shaderProgram, 'iTime');
+	fig.resLoc = gl.getUniformLocation(fig.shaderProgram, 'iRes');
 	for (const [k, v] of Object.entries(fig.params)) {
 		v.loc = gl.getUniformLocation(fig.shaderProgram, v.name);
 	}
