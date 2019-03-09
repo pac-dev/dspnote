@@ -1,5 +1,6 @@
 var lock;
 
+
 var vertexCode = `
 	attribute vec2 vertPos;
 	varying vec2 iUV;
@@ -8,6 +9,16 @@ var vertexCode = `
 		iUV = vertPos * 0.5 + 0.5;
 	}
 `
+/*
+var vertexCode = `#version 300 es
+	in vec2 vertPos;
+	out vec2 iUV;
+	void main() {
+		gl_Position = vec4(vertPos, 0.0, 1.0);
+		iUV = vertPos * 0.5 + 0.5;
+	}
+`
+*/
 
 function compileShader(gl, code, type) {
 	var shader = gl.createShader(type);
@@ -41,6 +52,7 @@ function initFig(fig)
 	fig.canvas.height = fig.canvas.offsetHeight;
 	
 	var gl = fig.canvas.getContext("webgl");
+	//var gl = fig.canvas.getContext("webgl2");
 	var shaderInfo = [
 		{type: gl.VERTEX_SHADER, code: vertexCode},
 		{type: gl.FRAGMENT_SHADER, code: fig.code}

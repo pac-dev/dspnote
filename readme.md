@@ -2,9 +2,9 @@
 
 DSPnote is a static site generator specialized in creating notebooks with interactive figures. It's mostly implemented as an extension to [python-markdown](https://github.com/Python-Markdown/markdown). It currently supports the following types of figures:
 
-- *SporthDiagram*: an audio processing block diagram, accompanied by a user-defined Sporth script that can be run in-browser, and parameter sliders to control the script.
-
-- *Image*: an image with a caption.
+- *SporthDiagram*: an audio processing block diagram, accompanied by a user-defined Sporth script that can be run in-browser, and parameter sliders to control the script
+- *ShaderFig*: a WebGL fragment shader, with an optional "play" button and parameter sliders to control variables in the script
+- *Image*: an image with a caption
 
 
 ## Installing and Using
