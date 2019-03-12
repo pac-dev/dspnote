@@ -47,7 +47,7 @@ function stopFig(fig)
 	setPlayingStyle(fig.ele, false);
 }
 
-export function createAll(ele, figLock)
+export function init(ele, figLock)
 {
 	lock = figLock;
 	SporthParams.init(sporth);

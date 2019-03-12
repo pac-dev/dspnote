@@ -1,6 +1,7 @@
 import sys, os, re, pathlib, yaml
 from .article import Article
 from distutils import dir_util
+import http.server, socketserver, threading
 
 class Project:
 	def __init__(self, sourceDir):
@@ -21,7 +22,17 @@ class Project:
 		config["outDir"] = self.sourceDir / config["outDir"]
 		return config
 	
+	def startLocalServer(self):
+		os.chdir(pathlib.Path(self.config["outDir"]).parent)
+		self.httpd = socketserver.TCPServer(("", 8033), http.server.SimpleHTTPRequestHandler)
+		thread = threading.Thread(target=self.httpd.serve_forever)
+		thread.start()
+	
 	def generate(self):
 		dir_util.copy_tree(str(self.config["staticDir"]), str(self.config["outDir"] / "static"))
 		for art in self.arts:
 			art.generate()
+		self.startLocalServer()
+		for art in self.arts:
+			art.makeFigshots()
+		self.httpd.shutdown()

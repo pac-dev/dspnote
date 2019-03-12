@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 html { height:100%; min-width: 440px; }
+html.fullScreen { overflow-y: hidden; }
 /* disable font boosting -_- */
 html body * { max-height:1000000px; }
 
@@ -84,7 +85,7 @@ a { color: #004276; }
 
 .shaderFig { text-align: center; }
 
-.shaderFig canvas {
+.shaderFig canvas, .shaderFig img {
 	width: 100%;
 	height: 60vw;
 	max-height: 445px;
@@ -187,4 +188,13 @@ a.figEdit, a.figFull {
 	max-width: 800px;
 	margin-left: 50%;
 	transform: translateX(-50%);
+}
+
+canvas.fullScreen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 12;
 }

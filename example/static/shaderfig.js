@@ -45,7 +45,7 @@ function buildShaderProgram(gl, shaderInfo) {
 	return program;
 }
 
-function initFig(fig)
+function initFigGL(fig)
 {
 	// prevent blockiness on hi-DPI:
 	fig.canvas.width = fig.canvas.offsetWidth;
@@ -53,6 +53,9 @@ function initFig(fig)
 	
 	var gl = fig.canvas.getContext("webgl");
 	//var gl = fig.canvas.getContext("webgl2");
+
+	// todo check if we got the context and show error message
+
 	var shaderInfo = [
 		{type: gl.VERTEX_SHADER, code: vertexCode},
 		{type: gl.FRAGMENT_SHADER, code: fig.code}
@@ -149,6 +152,7 @@ function createSlider(fig, match)
 	fig.slidersDiv.appendChild(paramDiv);
 	
 	slider.addEventListener('input', function(event) {
+		activateFig(fig);
 		param.value = slider.value;
 		displ.innerHTML = slider.value;
 		fig.dirty = true;
@@ -192,6 +196,7 @@ function animate(fig) {
 
 function runFig(fig)
 {
+	activateFig(fig);
 	if (lock.runningFig != null) {
 		stopFig(lock.runningFig);
 	}
@@ -212,6 +217,7 @@ function setPlayingStyle(ele, playing)
 
 function setFull(fig)
 {
+	activateFig(fig);
 	var fullParent = document.getElementById("fullParent");
 	fullParent.classList.toggle("fullEnabled", true);
 	fullParent.prepend(fig.canvas);
@@ -225,42 +231,77 @@ function setFull(fig)
 	fig.dirty = true;
 }
 
-export function createAll(ele, figLock)
+function activateFig(fig)
+{
+	if (fig.activated) return;
+	fig.activated = true;
+	var ele = fig.ele;
+	var i = ele.querySelector("img");
+	var c = document.createElement('canvas');
+	c.attributes["data-img"] = i.attributes["src"].value;
+	ele.replaceChild(c, i);
+	fig.canvas = ele.querySelector("canvas");
+	fig.previousTime = performance.now();
+	initFigGL(fig);
+	animate(fig);
+}
+
+function initFig(ele)
+{
+	var fig = {
+		ele: ele,
+		code: ele.querySelector(".figCode").value,
+		slidersDiv: ele.querySelector(".figSliders"),
+		runButton: ele.querySelector(".figRun"),
+		fullLink: ele.querySelector(".figFull"),
+		time: 0,
+		timeDiff: 0,
+		params: { },
+		dirty: true,
+		activated: false
+	};
+	fig.runButton.addEventListener("click", function(e) {
+		if (lock.runningFig == fig)
+			stopFig(fig);
+		else
+			runFig(fig);
+	});
+	fig.fullLink.addEventListener("click", function(e) {
+		e.preventDefault();
+		setFull(fig, true);
+	});
+	window.addEventListener("resize", function(e) {
+		fig.dirty = true;
+	});
+	setPlayingStyle(ele, lock.runningFig == fig);
+	createSliders(fig);
+	ele.data_fig = fig;
+}
+
+function activateAll(ele, figLock)
+{
+	var allEles = document.querySelectorAll(".shaderFig");
+	for (var ele of allEles) {
+		activateFig(ele.data_fig);
+	}
+	function* fullscreenFigs() {
+		var allCanvases = document.querySelectorAll(".shaderFig canvas");
+		document.documentElement.classList.add("fullScreen");
+		for (var ele of allCanvases) {
+				ele.classList.add("fullScreen");
+				window.dispatchEvent(new Event('resize'));
+				yield ele.attributes["data-img"];
+				ele.classList.remove("fullScreen");
+		}
+		document.documentElement.classList.remove("fullScreen");
+	}
+	window.fullscreenFig = fullscreenFigs();
+}
+
+export function init(ele, figLock)
 {
 	lock = figLock;
 	var allFigs = ele.querySelectorAll(".shaderFig");
-	allFigs.forEach(function(ele) {
-		var fig = {
-			ele: ele,
-			code: ele.querySelector(".figCode").value,
-			slidersDiv: ele.querySelector(".figSliders"),
-			runButton: ele.querySelector(".figRun"),
-			canvas: ele.querySelector("canvas"),
-			fullLink: ele.querySelector(".figFull"),
-			time: 0,
-			previousTime: performance.now(),
-			timeDiff: 0,
-			params: { },
-			dirty: true
-		};
-		fig.runButton.addEventListener("click", function(e) {
-			if (lock.runningFig == fig)
-				stopFig(fig);
-			else
-				runFig(fig);
-		});
-		fig.fullLink.addEventListener("click", function(e) {
-			e.preventDefault();
-			setFull(fig, true);
-		});
-		window.addEventListener("resize", function(e) {
-			fig.dirty = true;
-		});
-		setPlayingStyle(ele, lock.runningFig == fig);
-		createSliders(fig);
-		initFig(fig);
-		animate(fig);
-	});
+	allFigs.forEach(initFig);
+	window.activateAllShaderFigs = function() { activateAll(ele, figLock); };
 }
-
-

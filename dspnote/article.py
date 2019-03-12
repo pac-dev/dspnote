@@ -4,6 +4,7 @@ from markdown.preprocessors import Preprocessor
 from string import Template
 from distutils import dir_util
 from html import escape
+from selenium import webdriver
 
 from .figure import SporthDiagram, ShaderFig, Image
 
@@ -23,6 +24,7 @@ def renderFigureMatch(match):
 class FigurePreprocessor(Preprocessor):
 	def run(self, lines):
 		content = "\n".join(lines)
+		ShaderFig.imgctr = 0
 		content = re.sub(r'^figure:\s(.*?)\n\n', renderFigureMatch, content, 0, re.M|re.S)
 		return content.split("\n")
 
@@ -43,6 +45,7 @@ class Article:
 	def generate(self):
 		md = markdown.Markdown(extensions = ['meta', 'extra', FigureExtension()])
 		content = md.convert(self.src)
+		self.numShaderFigs = ShaderFig.imgctr
 		md.Meta["author"][0] = escape(md.Meta["author"][0])
 		def renderFileMatch(match):
 			match = match.group(1)
@@ -62,3 +65,17 @@ class Article:
 		index.close()
 		if self.assetsDir.is_dir():
 			dir_util.copy_tree(str(self.assetsDir), str(self.outDir))
+	
+	def makeFigshots(self):
+		if all([os.path.isfile(self.outDir / ('shaderfig_'+str(n+1)+'.png')) for n in range(self.numShaderFigs)]): return
+		options = webdriver.ChromeOptions()
+		options.add_argument('headless')
+		browser = webdriver.Chrome(executable_path=self.config["chromeDriver"], chrome_options=options)
+		browser.set_window_size(700, 445)
+		browser.get('http://localhost:8033/notes/' + self.basename)
+		browser.execute_script("activateAllShaderFigs()")
+		while(True):
+			img = browser.execute_script("return fullscreenFig.next()")
+			if (img['done']): break
+			browser.save_screenshot(str(self.outDir / img['value']))
+		browser.quit()
