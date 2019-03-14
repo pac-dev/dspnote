@@ -1,7 +1,8 @@
-import sys, os, re, pathlib, yaml
 from .article import Article
-from distutils import dir_util
-import http.server, socketserver, threading
+import os, pathlib, logging, socketserver, threading, http.server, distutils.dir_util
+import yaml
+
+log = logging.getLogger(__name__)
 
 class Project:
 	def __init__(self, sourceDir):
@@ -29,7 +30,10 @@ class Project:
 		thread.start()
 	
 	def generate(self):
-		dir_util.copy_tree(str(self.config["staticDir"]), str(self.config["outDir"] / "static"))
+		distutils.dir_util.copy_tree(
+			str(self.config["staticDir"]), 
+			str(self.config["outDir"] / "static")
+		)
 		for art in self.arts:
 			art.generate()
 		self.startLocalServer()

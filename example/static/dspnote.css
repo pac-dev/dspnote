@@ -83,7 +83,7 @@ a { color: #004276; }
 	text-align: center;
 }
 
-.shaderFig { text-align: center; }
+.shaderFig { text-align: center; line-height: 11px; }
 
 .shaderFig canvas, .shaderFig img {
 	width: 100%;

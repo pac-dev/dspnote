@@ -13,5 +13,6 @@ setup(
 		'jinja2',
 		'pyyaml',
 		'markdown',
+		'selenium',
 	]
 )

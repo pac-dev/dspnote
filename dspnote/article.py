@@ -1,12 +1,7 @@
-import sys, os, re, pathlib, codecs, __main__, logging, markdown, jinja2, textwrap
-from markdown.extensions import Extension
-from markdown.preprocessors import Preprocessor
-from string import Template
-from distutils import dir_util
-from html import escape
-from selenium import webdriver
-
+import  __main__
 from .figure import SporthDiagram, ShaderFig, Image
+import os, re, pathlib, html, codecs, logging, distutils.dir_util
+import markdown, jinja2, selenium.webdriver as webdriver
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +16,7 @@ def renderFigureMatch(match):
 		fig = Image(src)
 	return '\n' + fig.render() + '\n'
 
-class FigurePreprocessor(Preprocessor):
+class FigurePreprocessor(markdown.preprocessors.Preprocessor):
 	def run(self, lines):
 		content = "\n".join(lines)
 		ShaderFig.imgctr = 0
@@ -46,7 +41,7 @@ class Article:
 		md = markdown.Markdown(extensions = ['meta', 'extra', FigureExtension()])
 		content = md.convert(self.src)
 		self.numShaderFigs = ShaderFig.imgctr
-		md.Meta["author"][0] = escape(md.Meta["author"][0])
+		md.Meta["author"][0] = html.escape(md.Meta["author"][0])
 		def renderFileMatch(match):
 			match = match.group(1)
 			return (self.assetsDir / match).read_text()
@@ -64,7 +59,7 @@ class Article:
 		index.write(template.render(templateData))
 		index.close()
 		if self.assetsDir.is_dir():
-			dir_util.copy_tree(str(self.assetsDir), str(self.outDir))
+			distutils.dir_util.copy_tree(str(self.assetsDir), str(self.outDir))
 	
 	def makeFigshots(self):
 		if all([os.path.isfile(self.outDir / ('shaderfig_'+str(n+1)+'.png')) for n in range(self.numShaderFigs)]): return

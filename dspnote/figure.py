@@ -1,8 +1,6 @@
-import sys, os, re, pathlib, codecs, __main__, logging, markdown, jinja2, textwrap
-from markdown.extensions import Extension
-from markdown.preprocessors import Preprocessor
-from string import Template
-from distutils import dir_util
+import __main__, re, logging, textwrap
+
+log = logging.getLogger(__name__)
 
 class SporthDiagram:
 	def __init__(self, src):
