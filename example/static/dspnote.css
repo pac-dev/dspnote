@@ -1,5 +1,5 @@
 @charset "UTF-8";
-
+* { box-sizing: border-box; }
 html { height:100%; min-width: 440px; }
 html.fullScreen { overflow-y: hidden; }
 /* disable font boosting -_- */
@@ -15,20 +15,35 @@ body {
 	height: 100%;
 }
 
+@media screen and (max-width: 700px) {
+	body {
+		font-size: 17.5px;
+	}
+}
+
 .article {
 	text-align: center;
 	padding: 0 10px;
 }
 
-p, ul, ol, h1, h2, h3, h4, .subtitle, .figure, .figCaption, .prelist {
+p, ul, ol, h1, h2, h3, h4, pre, .subtitle, .figure, .figCaption, .prelist {
 	text-align: left;
 	max-width: 700px;
 	margin: 0 auto;
 }
 
-p, ul, ol{
+p, ul, ol {
 	line-height: 25px;
 	margin-bottom: 24px;
+}
+
+pre {
+	border: 3px solid #eee;
+	margin-bottom: 24px;
+	padding: 7px;
+	font-size: 15px;
+	line-height: 19px;
+	overflow-x: auto;
 }
 
 img {
@@ -64,7 +79,7 @@ a { color: #004276; }
 
 .figure {
 	border: 3px solid #eee;
-	margin-top: 40px;
+	margin-top: 26px;
 }
 .figSubPanel {
 	border-top: 3px solid #eee;
@@ -138,7 +153,6 @@ a.figEdit, a.figFull {
 	padding: 9px 16px;
 	text-align: center;
 	font-size: 15px;
-	box-sizing: border-box;
 	font-style: italic;
 	margin-bottom: 17px;
 }

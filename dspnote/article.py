@@ -38,7 +38,7 @@ class Article:
 		self.assetsDir = self.srcpath.parent / self.basename
 	
 	def generate(self):
-		md = markdown.Markdown(extensions = ['meta', 'extra', FigureExtension()])
+		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', FigureExtension()])
 		content = md.convert(self.src)
 		self.numShaderFigs = ShaderFig.imgctr
 		md.Meta["author"][0] = html.escape(md.Meta["author"][0])

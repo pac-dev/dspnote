@@ -14,5 +14,6 @@ setup(
 		'pyyaml',
 		'markdown',
 		'selenium',
+		'pygments',
 	]
 )
