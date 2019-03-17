@@ -5,25 +5,26 @@ import markdown, jinja2, selenium.webdriver as webdriver
 
 log = logging.getLogger(__name__)
 
-def renderFigureMatch(match):
+def renderFigureMatch(match, article):
 	src = match.group()
 	figureType = re.search( r'^figure:\s(.*?)$', src, re.M|re.S).group(1)
 	if (figureType == 'sporthDiagram'):
-		fig = SporthDiagram(src)
+		fig = SporthDiagram(src, article)
 	if (figureType == 'shaderFig'):
-		fig = ShaderFig(src)
+		fig = ShaderFig(src, article)
 	if (figureType == 'image'):
-		fig = Image(src)
+		fig = Image(src, article)
 	return '\n' + fig.render() + '\n'
 
 class FigurePreprocessor(markdown.preprocessors.Preprocessor):
 	def run(self, lines):
 		content = "\n".join(lines)
-		ShaderFig.imgctr = 0
-		content = re.sub(r'^figure:\s(.*?)\n\n', renderFigureMatch, content, 0, re.M|re.S)
+		content = re.sub(r'^figure:\s(.*?)\n\n', lambda m: renderFigureMatch(m, self.md.article), content, 0, re.M|re.S)
 		return content.split("\n")
 
 class FigureExtension(markdown.Extension):
+	def __init__(self, article):
+		self.article = article
 	def extendMarkdown(self, md, md_globals):
 		md.preprocessors.register(FigurePreprocessor(self), 'figures', 100)
 
@@ -38,10 +39,11 @@ class Article:
 		self.assetsDir = self.srcpath.parent / self.basename
 	
 	def generate(self):
-		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', FigureExtension()])
+		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', FigureExtension(self)])
+		self.numImageFallbacks = 0
 		content = md.convert(self.src)
-		self.numShaderFigs = ShaderFig.imgctr
-		md.Meta["author"][0] = html.escape(md.Meta["author"][0])
+		self.meta = {k : v[0] for k, v in  md.Meta.items()}
+		self.meta["author"] = html.escape(self.meta["author"])
 		def renderFileMatch(match):
 			match = match.group(1)
 			return (self.assetsDir / match).read_text()
@@ -50,7 +52,7 @@ class Article:
 		template = templateEnv.get_template("article.jinja")
 		templateData = {
 			"content": content,
-			"meta": {k : v[0] for k, v in  md.Meta.items()},
+			"meta": self.meta,
 			"res": self.config["publicResPath"],
 			"config": self.config,
 		}
@@ -62,7 +64,7 @@ class Article:
 			distutils.dir_util.copy_tree(str(self.assetsDir), str(self.outDir))
 	
 	def makeFigshots(self):
-		if all([os.path.isfile(self.outDir / ('shaderfig_'+str(n+1)+'.png')) for n in range(self.numShaderFigs)]): return
+		if all([os.path.isfile(self.outDir / ('shaderfig_'+str(n+1)+'.png')) for n in range(self.numImageFallbacks)]): return
 		options = webdriver.ChromeOptions()
 		options.add_argument('headless')
 		browser = webdriver.Chrome(executable_path=self.config["chromeDriver"], chrome_options=options)

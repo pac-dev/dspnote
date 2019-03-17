@@ -3,7 +3,8 @@ import __main__, re, logging, textwrap
 log = logging.getLogger(__name__)
 
 class SporthDiagram:
-	def __init__(self, src):
+	def __init__(self, src, article):
+		self.article = article
 		self.data = {
 			'diagram': re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1),
 			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
@@ -45,9 +46,10 @@ class SporthDiagram:
 </div>
 	"""
 
+
 class ShaderFig:
-	imgctr = 0
-	def __init__(self, src):
+	def __init__(self, src, article):
+		self.article = article
 		self.data = {
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'runnable': re.search( r'(?:\nrunnable:\s(.*?)\n|$)', src, re.S).group(1) or "false",
@@ -64,8 +66,8 @@ class ShaderFig:
 		# todo this obviously does not work:
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('dspnote param: ')
 		self.data['runnableClass'] = 'runnable' if self.data['runnable']=='true' else ""
-		ShaderFig.imgctr += 1
-		self.data['image'] = 'shaderfig_' + str(ShaderFig.imgctr) + '.png'
+		article.numImageFallbacks += 1
+		self.data['image'] = 'shaderfig_' + str(article.numImageFallbacks) + '.png'
 
 	def render(self):
 		return self.template.format(**self.data)
@@ -102,7 +104,8 @@ class ShaderFig:
 
 
 class Image:
-	def __init__(self, src):
+	def __init__(self, src, article):
+		self.article = article
 		self.data = {
 			'image': re.search( r'^image:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
