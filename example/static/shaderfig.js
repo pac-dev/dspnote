@@ -276,6 +276,13 @@ function initFig(ele)
 	setPlayingStyle(ele, lock.runningFig == fig);
 	createSliders(fig);
 	ele.data_fig = fig;
+	if (ele.querySelector("canvas")) {
+		fig.activated = true;
+		fig.canvas = ele.querySelector("canvas");
+		fig.previousTime = performance.now();
+		initFigGL(fig);
+		animate(fig);
+	}
 }
 
 function activateAll(ele, figLock)
@@ -288,10 +295,12 @@ function activateAll(ele, figLock)
 		var allCanvases = document.querySelectorAll(".shaderFig canvas");
 		document.documentElement.classList.add("fullScreen");
 		for (var ele of allCanvases) {
-				ele.classList.add("fullScreen");
-				window.dispatchEvent(new Event('resize'));
-				yield ele.attributes["data-img"];
-				ele.classList.remove("fullScreen");
+			if ("data-img" in ele.attributes === false)
+				continue;
+			ele.classList.add("fullScreen");
+			window.dispatchEvent(new Event('resize'));
+			yield ele.attributes["data-img"];
+			ele.classList.remove("fullScreen");
 		}
 		document.documentElement.classList.remove("fullScreen");
 	}

@@ -66,8 +66,13 @@ class ShaderFig:
 		# todo this obviously does not work:
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('dspnote param: ')
 		self.data['runnableClass'] = 'runnable' if self.data['runnable']=='true' else ""
-		article.numImageFallbacks += 1
-		self.data['image'] = 'shaderfig_' + str(article.numImageFallbacks) + '.png'
+		fallback = re.search( r'(?:\nfallback:\s(.*?)\n|$)', src, re.S).group(1) or 'true'
+		fallback = (fallback == 'true')
+		if (fallback):
+			article.numImageFallbacks += 1
+			self.data['figElement'] = '<img src="shaderfig_' + str(article.numImageFallbacks) + '.png">'
+		else:
+			self.data['figElement'] = '<canvas>canvas</canvas>'
 
 	def render(self):
 		return self.template.format(**self.data)
@@ -76,7 +81,7 @@ class ShaderFig:
 
 <div class="figure shaderFig {runnableClass}">
 	<textarea class="figCode">{code}</textarea>
-	<img src="{image}">
+	{figElement}
 	<div class="figSubPanel">
 		<div class="figRun"></div>
 		<div class="figSliders">
