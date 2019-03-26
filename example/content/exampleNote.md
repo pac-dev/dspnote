@@ -1,13 +1,13 @@
 Title: DSPnote Example Note
 Author: Test Man <testman@example.com>
-Created: November 28, 2018
+Created: November 2018
 
 # DSPnote Example
 
-Content is written in markdown with DSPnote extensions. The following sections describe the extensions.
+Content is written in [Markdown](https://daringfireball.net/projects/markdown/syntax), with some extra features. Examples of these features are given below. Note: when viewing the source file on Github, it's better to look at the [raw file](https://raw.githubusercontent.com/pac-dev/dspnote/master/example/content/exampleNote.md).
 
 
-## SporthDiagrams
+## Audio Scripts
 
 Example of a SporthDiagram:
 
@@ -31,7 +31,10 @@ code:
 	(_fb get) (_delay_length get 0.001 * _tik get 0.03 tport) 0.1 vdelay
 ```
 
-Another way of representing this type of model is with a [difference equation][], which can be useful during implementation, as an intermediate step or as reference. In this case the difference equation is:
+
+## Math Typesetting
+
+Math typesetting is done with [MathJax](https://www.mathjax.org/):
 
 $$
 y(n) = x(n-d) + ay(n-d)
@@ -46,8 +49,51 @@ $$
 - $a$ is the feedback
 
 
+## WebGL Shaders
 
-[Sporth]: https://paulbatchelor.github.io/proj/sporth.html
-[learn sporth]: https://audiomasher.org/learn
-[difference equation]: https://en.wikipedia.org/wiki/Linear_difference_equation
+Example of a ShaderFig:
 
+figure: shaderFig
+caption: Log-polar tiling in 2D. Controls perform translation before mapping. Red axis: $\rho$, green axis: $\theta$
+fallback: false
+code:
+```
+	precision mediump float;
+	#define M_PI 3.1415926535897932384626433832795
+	
+	// Inputs
+	varying vec2 iUV;
+	uniform float iTime;
+	uniform vec2 iRes;
+	
+	// These lines are parsed by dspnote to generate sliders
+	uniform float rho_offset; //dspnote param: 0 - 1
+	uniform float theta_offset; //dspnote param: 0 - 1
+	
+	vec2 logPolar(vec2 p) {
+		p = vec2(log(length(p)), atan(p.y, p.x));
+		return p;
+	}
+	float disk(vec2 pos, float aaSize) {
+		return 1.0-smoothstep(0.3-aaSize, 0.3+aaSize, length(pos));
+	}
+	vec3 logPolarPolka(vec2 p) {
+		p *= 1.5;
+		float aaSize = length(logPolar(p) - logPolar(p+1.0/iRes)) * 3.5;
+		p = logPolar(p);
+		p *= 6.0/M_PI;
+		vec2 diskP = p - vec2(rho_offset, theta_offset)*3.0;
+		diskP = fract(diskP) * 2.0 - 1.0;
+		vec3 ret = vec3(1.0);
+		return mix(ret, vec3(0.4, 0.4, 0.3), disk(diskP, aaSize));
+	}
+	void main() {
+		vec2 p = iUV*2.-1.;
+		p.x *= iRes.x/iRes.y;
+		vec2 quarter = vec2(iRes.x/iRes.y * 0.5, 0);
+		vec3 ret = logPolarPolka(p);
+		gl_FragColor = vec4(ret, 1.0);
+	}
+```
+
+The code can also be in an external GLSL file, for an example, see the source of [Log-spherical Mapping in SDF Raymarching](https://github.com/pac-dev/notes/tree/master/content).

@@ -3,21 +3,30 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width">
 		<title>DSPnote Example Note</title>
-		<link rel="stylesheet" type="text/css" href="/notes/static/dspnote.css" charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/static/dspnote.css" charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/static/murphy.css" charset="utf-8">
 		<!--script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js"></script-->
-		<link rel="stylesheet" href="/notes/static/katex/katex.min.css">
-		<script src="/notes/static/katex/katex.min.js"></script>
-		<script src="/notes/static/katex/auto-render.min.js"></script>
+		<link rel="stylesheet" href="/static/katex/katex.min.css">
+		<script src="/static/katex/katex.min.js"></script>
+		<script src="/static/katex/auto-render.min.js"></script>
+		<script type="module" src="/static/dspnote.js"></script>
 	</head>
 	<body>
 		<div class=article>
-		<h1>DSPnote Example</h1>
-<p>Content is written in markdown with DSPnote extensions. The following sections describe the extensions.</p>
-<h2>SporthDiagrams</h2>
+			<h1>DSPnote Example Note</h1>
+			<div class=subtitle>
+				Test Man &lt;testman@example.com&gt;
+				<br>
+				November 2018 
+				<br>
+			</div>
+			<h1>DSPnote Example</h1>
+<p>Content is written in <a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a>, with some extra features. Examples of these features are given below. Note: when viewing the source file on Github, it's better to look at the <a href="https://raw.githubusercontent.com/pac-dev/dspnote/master/example/content/exampleNote.md">raw file</a>.</p>
+<h2>Audio Scripts</h2>
 <p>Example of a SporthDiagram:</p>
-<div class="figure sporthDiagram">
+<div class="figure runnable sporthDiagram">
     <textarea class="figCode">_exciter_type 9 palias # 0 - 1
 _delay_length 10 palias # 1 - 10, 5 (ms)
 _feedback 11 palias # -1 - 1, 0.7
@@ -56,11 +65,18 @@ dup 2 metro 0 0.001 0.01 tenv * _exciter_type get cf
 </div>
 
         </div>
-        <a href="#" class="figEdit">[edit]</a>
+        <div class="cornerControls">
+            <a href="#" target="_blank" class="figEdit">[edit]</a>
+        </div>
     </div>
 </div>
 
-<p>Another way of representing this type of model is with a <a href="https://en.wikipedia.org/wiki/Linear_difference_equation">difference equation</a>, which can be useful during implementation, as an intermediate step or as reference. In this case the difference equation is:</p>
+<div class="figCaption">
+
+</div>
+
+<h2>Math Typesetting</h2>
+<p>Math typesetting is done with <a href="https://www.mathjax.org/">MathJax</a>:</p>
 <p>$$
 y(n) = x(n-d) + ay(n-d)
 $$</p>
@@ -72,9 +88,86 @@ $$</p>
 <li>$d$ is the delay length</li>
 <li>$a$ is the feedback</li>
 </ul>
+<h2>WebGL Shaders</h2>
+<p>Example of a ShaderFig:</p>
+<div class="figure shaderFig ">
+    <textarea class="figCode">  precision mediump float;
+    #define M_PI 3.1415926535897932384626433832795
+
+    // Inputs
+    varying vec2 iUV;
+    uniform float iTime;
+    uniform vec2 iRes;
+
+    // These lines are parsed by dspnote to generate sliders
+    uniform float rho_offset; //dspnote param: 0 - 1
+    uniform float theta_offset; //dspnote param: 0 - 1
+
+    vec2 logPolar(vec2 p) {
+        p = vec2(log(length(p)), atan(p.y, p.x));
+        return p;
+    }
+    float disk(vec2 pos, float aaSize) {
+        return 1.0-smoothstep(0.3-aaSize, 0.3+aaSize, length(pos));
+    }
+    vec3 logPolarPolka(vec2 p) {
+        p *= 1.5;
+        float aaSize = length(logPolar(p) - logPolar(p+1.0/iRes)) * 3.5;
+        p = logPolar(p);
+        p *= 6.0/M_PI;
+        vec2 diskP = p - vec2(rho_offset, theta_offset)*3.0;
+        diskP = fract(diskP) * 2.0 - 1.0;
+        vec3 ret = vec3(1.0);
+        return mix(ret, vec3(0.4, 0.4, 0.3), disk(diskP, aaSize));
+    }
+    void main() {
+        vec2 p = iUV*2.-1.;
+        p.x *= iRes.x/iRes.y;
+        vec2 quarter = vec2(iRes.x/iRes.y * 0.5, 0);
+        vec3 ret = logPolarPolka(p);
+        gl_FragColor = vec4(ret, 1.0);
+    }</textarea>
+    <canvas>canvas</canvas>
+    <div class="figSubPanel">
+        <div class="figRun"></div>
+        <div class="figSliders">
+
+<div class="sliderOut">
+    <div class="sliderLabel"> </div>
+    <input type="range" class="sliderRange">
+    <div class="sliderDispl"> </div>
+</div>
+
+<div class="sliderOut">
+    <div class="sliderLabel"> </div>
+    <input type="range" class="sliderRange">
+    <div class="sliderDispl"> </div>
+</div>
+
+        </div>
+        <div class="cornerControls">
+            <a href="#" target="_blank" class="figEdit">[source]</a>
+            <a href="#" class="figFull">[full]</a>
+        </div>
+    </div>
+</div>
+
+<div class="figCaption">
+    Log-polar tiling in 2D. Controls perform translation before mapping. Red axis: $\rho$, green axis: $\theta$
+</div>
+
+<p>The code can also be in an external GLSL file, for an example, see the source of <a href="https://github.com/pac-dev/notes/tree/master/content">Log-spherical Mapping in SDF Raymarching</a>.</p>
+			<br>
+			<hr>
+			<div class=footer>
+				
+				&nbsp; 
+				
+			</div>
+			<br>
+			<br>
 		</div>
-		<script src="/notes/static/sporthparams.js"></script>
-		<script src="/notes/static/dspnote.js"></script>
-		<script async src="/notes/static/sporthal.js"></script>
+		<div id=fullParent>
+		</div>
 	</body>
 </html>

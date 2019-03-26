@@ -1,6 +1,6 @@
 # dspnote example configuration file #
 
-urlPrefix: /notes/
+urlPrefix: /
 
 ### LOCAL PATHS ###
 # can be absolute or relative to this yml
