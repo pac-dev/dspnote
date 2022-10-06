@@ -25,7 +25,7 @@ class FigurePreprocessor(markdown.preprocessors.Preprocessor):
 class FigureExtension(markdown.Extension):
 	def __init__(self, article):
 		self.article = article
-	def extendMarkdown(self, md, md_globals):
+	def extendMarkdown(self, md):
 		md.preprocessors.register(FigurePreprocessor(self), 'figures', 100)
 
 class Article:

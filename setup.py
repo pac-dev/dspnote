@@ -10,10 +10,10 @@ setup(
 	url='https://github.com/pac/dspnote',
 	scripts=['bin/dspnote-gen'],
 	install_requires=[
-		'jinja2',
-		'pyyaml',
-		'markdown',
-		'selenium',
-		'pygments',
+		'jinja2>=3',
+		'pyyaml>=6',
+		'markdown>=3.4',
+		'selenium>=4',
+		'pygments>=2',
 	]
 )

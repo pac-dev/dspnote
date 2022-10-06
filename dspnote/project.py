@@ -15,7 +15,7 @@ class Project:
 	
 	def parseConfig(self):
 		configFile = open(self.configFilePath)
-		config = yaml.load(configFile)
+		config = yaml.safe_load(configFile)
 		configFile.close()
 		config["templateDir"] = self.sourceDir / config["templateDir"]
 		config["contentDir"] = self.sourceDir / config["contentDir"]
