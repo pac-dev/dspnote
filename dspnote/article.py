@@ -1,5 +1,5 @@
 import  __main__
-from .figure import SporthDiagram, ShaderFig, Image
+from .figure import SporthDiagram, ShaderFig, Image, Video
 import os, re, pathlib, html, codecs, logging, distutils.dir_util
 import markdown, jinja2, selenium.webdriver as webdriver
 
@@ -14,6 +14,8 @@ def renderFigureMatch(match, article):
 		fig = ShaderFig(src, article)
 	if (figureType == 'image'):
 		fig = Image(src, article)
+	if (figureType == 'video'):
+		fig = Video(src, article)
 	return '\n' + fig.render() + '\n'
 
 class FigurePreprocessor(markdown.preprocessors.Preprocessor):

@@ -131,3 +131,32 @@ class Image:
 	"""
 
 
+class Video:
+	def __init__(self, src, article):
+		self.article = article
+		self.data = {
+			'video': re.search( r'^video:\s(.*?)$', src, re.M|re.S).group(1),
+			'poster': re.search( r'^poster:\s(.*?)$', src, re.M|re.S).group(1),
+			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
+		}
+
+	def render(self):
+		return self.template.format(**self.data)
+
+	template = """
+
+<div class="figure video">
+	<div class="figDiagram">
+		<img src="{poster}">
+		<video loop allowfullscreen onclick="this.paused?this.play():this.pause()">
+			<source src="{video}" type="video/mp4">
+		</video>
+	</div>
+</div>
+<div class="figCaption">
+	{caption}
+</div>
+
+	"""
+
+
