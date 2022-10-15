@@ -32,8 +32,8 @@ class SporthDiagram:
 		</div>
 	</div>
 </div>
-<div class="figCaption">
-	{caption}
+<div class="figCaption" markdown="span">
+{caption}
 </div>
 
 	"""
@@ -93,8 +93,8 @@ class ShaderFig:
 		</div>
 	</div>
 </div>
-<div class="figCaption">
-	{caption}
+<div class="figCaption" markdown="span">
+{caption}
 </div>
 
 	"""
@@ -124,8 +124,8 @@ class Image:
 <div class="figure image">
 	<div class="figDiagram"><img src="{image}"></div>
 </div>
-<div class="figCaption">
-	{caption}
+<div class="figCaption" markdown="span">
+{caption}
 </div>
 
 	"""
@@ -153,8 +153,8 @@ class Video:
 		</video>
 	</div>
 </div>
-<div class="figCaption">
-	{caption}
+<div class="figCaption" markdown="span">
+{caption}
 </div>
 
 	"""
