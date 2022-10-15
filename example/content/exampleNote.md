@@ -67,6 +67,7 @@ code:
 	uniform vec2 iRes;
 	
 	// These lines are parsed by dspnote to generate sliders
+	uniform int style; //dspnote param: disk | ring
 	uniform float rho_offset; //dspnote param: 0 - 1
 	uniform float theta_offset; //dspnote param: 0 - 1
 	
@@ -77,20 +78,24 @@ code:
 	float disk(vec2 pos, float aaSize) {
 		return 1.0-smoothstep(0.3-aaSize, 0.3+aaSize, length(pos));
 	}
+	float ring(vec2 pos, float aaSize) {
+		return 1.0-smoothstep(0.08-aaSize, 0.08+aaSize, abs(length(pos)-0.25));
+	}
 	vec3 logPolarPolka(vec2 p) {
 		p *= 1.5;
 		float aaSize = length(logPolar(p) - logPolar(p+1.0/iRes)) * 3.5;
 		p = logPolar(p);
 		p *= 6.0/M_PI;
-		vec2 diskP = p - vec2(rho_offset, theta_offset)*3.0;
-		diskP = fract(diskP) * 2.0 - 1.0;
-		vec3 ret = vec3(1.0);
-		return mix(ret, vec3(0.4, 0.4, 0.3), disk(diskP, aaSize));
+		vec2 tile = p - vec2(rho_offset, theta_offset)*3.0;
+		tile = fract(tile) * 2.0 - 1.0;
+		float shape;
+		if (style == 0) shape = disk(tile, aaSize);
+		else shape = ring(tile, aaSize);
+		return mix(vec3(1.0), vec3(0.4, 0.4, 0.3), shape);
 	}
 	void main() {
 		vec2 p = iUV*2.-1.;
 		p.x *= iRes.x/iRes.y;
-		vec2 quarter = vec2(iRes.x/iRes.y * 0.5, 0);
 		vec3 ret = logPolarPolka(p);
 		gl_FragColor = vec4(ret, 1.0);
 	}

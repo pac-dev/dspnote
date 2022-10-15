@@ -97,7 +97,8 @@ function renderFrame(fig)
 	gl.uniform1f(fig.timeLoc, fig.time*0.001);
 	gl.uniform2f(fig.resLoc, fig.canvas.width, fig.canvas.height);
 	for (const [k, v] of Object.entries(fig.params)) {
-		gl.uniform1f(v.loc, v.value);
+		if (v.type == "f") gl.uniform1f(v.loc, v.value);
+		if (v.type == "i") gl.uniform1i(v.loc, v.value);
 	}
 	
 	gl.drawArrays(gl.TRIANGLES, 0, fig.vertexCount);
@@ -113,10 +114,12 @@ function prettyParamName(s)
 }
 
 var num = String.raw`(-?\d+(?:\.\d+)?)`;
-var re = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
+var sliderRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
+var dropdownRe = new RegExp(String.raw`^\s*uniform int ([\w]+); //dspnote param: ((?:[\w]+(?: \| )?)+)$`, 'gm');
 function createSlider(fig, match)
 {
 	var param = {
+		type: "f",
 		name: match[1],
 		min: match[2],
 		max: match[3],
@@ -161,12 +164,57 @@ function createSlider(fig, match)
 	slider.value = param.value;
 }
 
+function createDropdown(fig, match)
+{
+	var param = {
+		type: "i",
+		name: match[1],
+		optionString: match[2],
+		value: 0,
+	};
+
+	fig.params[param.name] = param;
+	
+	var paramDiv = document.createElement("div");
+	paramDiv.className = "sliderOut";
+	var label = document.createElement("div");
+	label.innerHTML = prettyParamName(param.name) + ":";
+	label.className = "sliderLabel";
+	paramDiv.appendChild(label);
+	var options = param.optionString.split("|").map(s => s.trim());
+	var select = document.createElement("select");
+	for (let [optN, optString] of Object.entries(options)) {
+		var option = document.createElement("option");
+		option.value = optN;
+		option.innerText = optString;
+		select.appendChild(option);
+	}
+	paramDiv.appendChild(select);
+	// space filler:
+	paramDiv.appendChild(document.createElement("div"));
+	fig.slidersDiv.appendChild(paramDiv);
+	
+	select.addEventListener('change', function(event) {
+		activateFig(fig);
+		param.value = Number(select.value);
+		fig.dirty = true;
+	});
+	
+	select.value = param.value;
+}
+
 function createSliders(fig)
 {
-	// uniform float vari; //dspnote param: 0 - 1
 	fig.slidersDiv.innerHTML = '';
+	// uniform int object_mode; //dspnote param: haha | huhu
 	while(true) {
-		var match = re.exec(fig.code);
+		var match = dropdownRe.exec(fig.code);
+		if (!match) break;
+		createDropdown(fig, match);
+	}
+	// uniform float vari; //dspnote param: 0 - 1
+	while(true) {
+		var match = sliderRe.exec(fig.code);
 		if (!match) break;
 		createSlider(fig, match);
 	}
