@@ -1,8 +1,22 @@
-import __main__, re, logging, textwrap
+import __main__, re, logging
 
 log = logging.getLogger(__name__)
 
-class SporthDiagram:
+def trimLines(txt: str):
+	txt = txt.splitlines()
+	txt = [line.strip() for line in txt]
+	return '\n'.join(txt)
+
+class Figure:
+	def __init__(self):
+		self.data = { }
+
+	def render(self):
+		return trimLines(self.template).format(**self.data)
+
+	template = ''
+
+class SporthDiagram(Figure):
 	def __init__(self, src, article):
 		self.article = article
 		self.data = {
@@ -11,11 +25,8 @@ class SporthDiagram:
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'code': re.search( r'^code:\n```\n(.*?)\n```', src, re.M|re.S).group(1),
 		}
-		self.data['code'] = textwrap.dedent(self.data['code'])
+		self.data['code'] = trimLines(self.data['code'])
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('palias')
-
-	def render(self):
-		return self.template.format(**self.data)
 
 	template = """
 
@@ -47,7 +58,7 @@ class SporthDiagram:
 	"""
 
 
-class ShaderFig:
+class ShaderFig(Figure):
 	def __init__(self, src, article):
 		self.article = article
 		self.data = {
@@ -73,9 +84,6 @@ class ShaderFig:
 			self.data['figElement'] = '<img src="shaderfig_' + str(article.numImageFallbacks) + '.png">'
 		else:
 			self.data['figElement'] = '<canvas>canvas</canvas>'
-
-	def render(self):
-		return self.template.format(**self.data)
 
 	template = """
 
@@ -108,16 +116,13 @@ class ShaderFig:
 	"""
 
 
-class Image:
+class Image(Figure):
 	def __init__(self, src, article):
 		self.article = article
 		self.data = {
 			'image': re.search( r'^image:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
 		}
-
-	def render(self):
-		return self.template.format(**self.data)
 
 	template = """
 
@@ -131,7 +136,7 @@ class Image:
 	"""
 
 
-class Video:
+class Video(Figure):
 	def __init__(self, src, article):
 		self.article = article
 		self.data = {
@@ -139,9 +144,6 @@ class Video:
 			'poster': re.search( r'^poster:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
 		}
-
-	def render(self):
-		return self.template.format(**self.data)
 
 	template = """
 

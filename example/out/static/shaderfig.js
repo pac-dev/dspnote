@@ -335,8 +335,10 @@ function initFig(ele)
 
 function activateAll(ele, figLock)
 {
-	var allEles = document.querySelectorAll(".shaderFig");
-	for (var ele of allEles) {
+	var article = document.getElementsByClassName('article')[0];
+	var figEles = document.querySelectorAll(".shaderFig");
+	article.replaceChildren(...figEles);
+	for (var ele of figEles) {
 		activateFig(ele.data_fig);
 	}
 	function* fullscreenFigs() {
