@@ -249,3 +249,9 @@ canvas.fullScreen {
 	width: 100%;
 	z-index: 12;
 }
+
+.split {
+	display: inline-block;
+	width: 348px;
+	vertical-align: middle;
+}

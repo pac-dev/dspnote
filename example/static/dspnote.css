@@ -114,7 +114,6 @@ sup {
 	width: 100%;
 }
 
-
 .figure.video .figDiagram::after {
 	position: absolute;
 	top: 0;
@@ -249,4 +248,10 @@ canvas.fullScreen {
 	height: 100%;
 	width: 100%;
 	z-index: 12;
+}
+
+.split {
+	display: inline-block;
+	width: 348px;
+	vertical-align: middle;
 }
