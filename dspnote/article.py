@@ -5,30 +5,38 @@ import markdown, jinja2, selenium.webdriver as webdriver
 
 log = logging.getLogger(__name__)
 
-def renderFigureMatch(match, article):
+def renderFigureMatch(match, md):
 	src = match.group()
 	figureType = re.search( r'^figure:\s(.*?)$', src, re.M|re.S).group(1)
 	if (figureType == 'sporthDiagram'):
-		fig = SporthDiagram(src, article)
+		fig = SporthDiagram(src, md)
 	if (figureType == 'shaderFig'):
-		fig = ShaderFig(src, article)
+		fig = ShaderFig(src, md)
 	if (figureType == 'image'):
-		fig = Image(src, article)
+		fig = Image(src, md)
 	if (figureType == 'video'):
-		fig = Video(src, article)
+		fig = Video(src, md)
 	return '\n' + fig.render() + '\n'
 
 class FigurePreprocessor(markdown.preprocessors.Preprocessor):
 	def run(self, lines):
 		content = "\n".join(lines)
-		content = re.sub(r'^figure:\s(.*?)\n\n', lambda m: renderFigureMatch(m, self.md.article), content, 0, re.M|re.S)
+		content = re.sub(r'^figure:\s(.*?)code:\n```\n+(.*?)```\n', lambda m: renderFigureMatch(m, self.md), content, 0, re.M|re.S)
+		content = re.sub(r'^figure:\s(.*?)\n\n', lambda m: renderFigureMatch(m, self.md), content, 0, re.M|re.S)
 		return content.split("\n")
+
+class FigurePostprocesor(markdown.postprocessors.Postprocessor):
+	def run(self, text):
+		text = re.sub('<p>[\\n\\s]*?\u0002', ' \u0002', text)
+		return re.sub('\u0003[\\n\\s]*?</p>', '\u0003 ', text)
 
 class FigureExtension(markdown.Extension):
 	def __init__(self, article):
 		self.article = article
 	def extendMarkdown(self, md):
-		md.preprocessors.register(FigurePreprocessor(self), 'figures', 100)
+		self.htmlStash = md.htmlStash
+		md.preprocessors.register(FigurePreprocessor(self), 'figures', 29)
+		md.postprocessors.register(FigurePostprocesor(self), 'figures', 31)
 
 class Article:
 	def __init__(self, config, path):
@@ -41,6 +49,7 @@ class Article:
 		self.assetsDir = self.srcpath.parent / self.basename
 	
 	def generate(self):
+		print('generating '+self.basename)
 		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', FigureExtension(self)])
 		self.numImageFallbacks = 0
 		content = md.convert(self.src)

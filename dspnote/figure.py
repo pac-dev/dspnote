@@ -12,13 +12,22 @@ class Figure:
 		self.data = { }
 
 	def render(self):
-		return trimLines(self.template).format(**self.data)
+		ret = self.md.htmlStash.store(self.figTemplate.format(**self.data))
+		ret += self.capTemplate.format(**self.data)
+		return ret
 
-	template = ''
+	figTemplate = ''
+	capTemplate = """
+
+<div class="figCaption" markdown="span">
+{caption}
+</div>
+
+"""
 
 class SporthDiagram(Figure):
-	def __init__(self, src, article):
-		self.article = article
+	def __init__(self, src, md):
+		self.md = md
 		self.data = {
 			'diagram': re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1),
 			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
@@ -28,7 +37,7 @@ class SporthDiagram(Figure):
 		self.data['code'] = trimLines(self.data['code'])
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('palias')
 
-	template = """
+	figTemplate = """
 
 <div class="figure runnable sporthDiagram">
 	<textarea class="figCode">{code}</textarea>
@@ -43,9 +52,6 @@ class SporthDiagram(Figure):
 		</div>
 	</div>
 </div>
-<div class="figCaption" markdown="span">
-{caption}
-</div>
 
 	"""
 
@@ -59,8 +65,8 @@ class SporthDiagram(Figure):
 
 
 class ShaderFig(Figure):
-	def __init__(self, src, article):
-		self.article = article
+	def __init__(self, src, md):
+		self.md = md
 		self.data = {
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'runnable': re.search( r'(?:\nrunnable:\s(.*?)\n|$)', src, re.S).group(1) or "false",
@@ -80,12 +86,12 @@ class ShaderFig(Figure):
 		fallback = re.search( r'(?:\nfallback:\s(.*?)\n|$)', src, re.S).group(1) or 'true'
 		fallback = (fallback == 'true')
 		if (fallback):
-			article.numImageFallbacks += 1
-			self.data['figElement'] = '<img src="shaderfig_' + str(article.numImageFallbacks) + '.png">'
+			md.article.numImageFallbacks += 1
+			self.data['figElement'] = '<img src="shaderfig_' + str(md.article.numImageFallbacks) + '.png">'
 		else:
 			self.data['figElement'] = '<canvas>canvas</canvas>'
 
-	template = """
+	figTemplate = """
 
 <div class="figure shaderFig {runnableClass}">
 	<textarea class="figCode">{code}</textarea>
@@ -101,9 +107,6 @@ class ShaderFig(Figure):
 		</div>
 	</div>
 </div>
-<div class="figCaption" markdown="span">
-{caption}
-</div>
 
 	"""
 
@@ -117,35 +120,32 @@ class ShaderFig(Figure):
 
 
 class Image(Figure):
-	def __init__(self, src, article):
-		self.article = article
+	def __init__(self, src, md):
+		self.md = md
 		self.data = {
 			'image': re.search( r'^image:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
 		}
 
-	template = """
+	figTemplate = """
 
 <div class="figure image">
 	<div class="figDiagram"><img src="{image}"></div>
-</div>
-<div class="figCaption" markdown="span">
-{caption}
 </div>
 
 	"""
 
 
 class Video(Figure):
-	def __init__(self, src, article):
-		self.article = article
+	def __init__(self, src, md):
+		self.md = md
 		self.data = {
 			'video': re.search( r'^video:\s(.*?)$', src, re.M|re.S).group(1),
 			'poster': re.search( r'^poster:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
 		}
 
-	template = """
+	figTemplate = """
 
 <div class="figure video">
 	<div class="figDiagram">
@@ -154,9 +154,6 @@ class Video(Figure):
 			<source src="{video}" type="video/mp4">
 		</video>
 	</div>
-</div>
-<div class="figCaption" markdown="span">
-{caption}
 </div>
 
 	"""

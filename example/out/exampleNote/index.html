@@ -26,8 +26,10 @@
 <p>Content is written in <a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a>, with some extra features. Examples of these features are given below. Note: when viewing the source file on Github, it's better to look at the <a href="https://raw.githubusercontent.com/pac-dev/dspnote/master/example/content/exampleNote.md">raw file</a>.</p>
 <h2>Audio Scripts</h2>
 <p>Example of a SporthDiagram:</p>
+ 
+
 <div class="figure runnable sporthDiagram">
-    <textarea class="figCode">_exciter_type 9 palias # 0 - 1
+	<textarea class="figCode">_exciter_type 9 palias # 0 - 1
 _delay_length 10 palias # 1 - 10, 5 (ms)
 _feedback 11 palias # -1 - 1, 0.7
 _tik var tick _tik set
@@ -41,35 +43,37 @@ dup 2 metro 0 0.001 0.01 tenv * _exciter_type get cf
 
 # delay and feedback
 (_fb get) (_delay_length get 0.001 * _tik get 0.03 tport) 0.1 vdelay</textarea>
-    <div class="figDiagram"><img src="delayLine.svg"></div>
-    <div class="figSubPanel">
-        <div class="figRun"></div>
-        <div class="figSliders off">
-
+	<div class="figDiagram"><img src="delayLine.svg"></div>
+	<div class="figSubPanel">
+		<div class="figRun"></div>
+		<div class="figSliders off">
+		
 <div class="sliderOut">
-    <div class="sliderLabel"> </div>
-    <input type="range" class="sliderRange" disabled="">
-    <div class="sliderDispl"> </div>
+	<div class="sliderLabel"> </div>
+	<input type="range" class="sliderRange" disabled="">
+	<div class="sliderDispl"> </div>
 </div>
-
+	
 <div class="sliderOut">
-    <div class="sliderLabel"> </div>
-    <input type="range" class="sliderRange" disabled="">
-    <div class="sliderDispl"> </div>
+	<div class="sliderLabel"> </div>
+	<input type="range" class="sliderRange" disabled="">
+	<div class="sliderDispl"> </div>
 </div>
-
+	
 <div class="sliderOut">
-    <div class="sliderLabel"> </div>
-    <input type="range" class="sliderRange" disabled="">
-    <div class="sliderDispl"> </div>
+	<div class="sliderLabel"> </div>
+	<input type="range" class="sliderRange" disabled="">
+	<div class="sliderDispl"> </div>
+</div>
+	
+		</div>
+		<div class="cornerControls">
+			<a href="#" target="_blank" class="figEdit">[edit]</a>
+		</div>
+	</div>
 </div>
 
-        </div>
-        <div class="cornerControls">
-            <a href="#" target="_blank" class="figEdit">[edit]</a>
-        </div>
-    </div>
-</div>
+	 
 <div class="figCaption">
 
 </div>
@@ -88,8 +92,10 @@ $$</p>
 </ul>
 <h2>WebGL Shaders</h2>
 <p>Example of a ShaderFig:</p>
+ 
+
 <div class="figure shaderFig ">
-    <textarea class="figCode">  precision mediump float;
+	<textarea class="figCode">    precision mediump float;
     #define M_PI 3.1415926535897932384626433832795
 
     // Inputs
@@ -130,36 +136,38 @@ $$</p>
         vec3 ret = logPolarPolka(p);
         gl_FragColor = vec4(ret, 1.0);
     }</textarea>
-    <canvas>canvas</canvas>
-    <div class="figSubPanel">
-        <div class="figRun"></div>
-        <div class="figSliders">
-
+	<canvas>canvas</canvas>
+	<div class="figSubPanel">
+		<div class="figRun"></div>
+		<div class="figSliders">
+		
 <div class="sliderOut">
-    <div class="sliderLabel"> </div>
-    <input type="range" class="sliderRange">
-    <div class="sliderDispl"> </div>
+	<div class="sliderLabel"> </div>
+	<input type="range" class="sliderRange">
+	<div class="sliderDispl"> </div>
 </div>
-
+	
 <div class="sliderOut">
-    <div class="sliderLabel"> </div>
-    <input type="range" class="sliderRange">
-    <div class="sliderDispl"> </div>
+	<div class="sliderLabel"> </div>
+	<input type="range" class="sliderRange">
+	<div class="sliderDispl"> </div>
 </div>
-
+	
 <div class="sliderOut">
-    <div class="sliderLabel"> </div>
-    <input type="range" class="sliderRange">
-    <div class="sliderDispl"> </div>
+	<div class="sliderLabel"> </div>
+	<input type="range" class="sliderRange">
+	<div class="sliderDispl"> </div>
+</div>
+	
+		</div>
+		<div class="cornerControls">
+			<a href="#" target="_blank" class="figEdit">[source]</a>
+			<a href="#" class="figFull">[full]</a>
+		</div>
+	</div>
 </div>
 
-        </div>
-        <div class="cornerControls">
-            <a href="#" target="_blank" class="figEdit">[source]</a>
-            <a href="#" class="figFull">[full]</a>
-        </div>
-    </div>
-</div>
+	 
 <div class="figCaption">
 Log-polar tiling in 2D. Controls perform translation before mapping. Red axis: $\rho$, green axis: $\theta$
 </div>
