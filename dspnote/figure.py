@@ -12,7 +12,7 @@ class Figure:
 		self.data = { }
 
 	def render(self):
-		ret = self.md.htmlStash.store(self.figTemplate.format(**self.data))
+		ret = '\n\nFig-'+self.md.htmlStash.store(self.figTemplate.format(**self.data))+'\n\n'
 		ret += self.capTemplate.format(**self.data)
 		return ret
 

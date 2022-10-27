@@ -25,16 +25,23 @@ class FigurePreprocessor(markdown.preprocessors.Preprocessor):
 		content = re.sub(r'^figure:\s(.*?)\n\n', lambda m: renderFigureMatch(m, self.md), content, 0, re.M|re.S)
 		return content.split("\n")
 
+class MathPreprocessor(markdown.preprocessors.Preprocessor):
+	def run(self, lines):
+		content = "\n".join(lines)
+		content = re.sub(r'(?<!\\)(\$\$.+?\$\$)', lambda m: self.md.htmlStash.store(m.group()), content, 0, re.M|re.S)
+		return content.split("\n")
+
 class FigurePostprocesor(markdown.postprocessors.Postprocessor):
 	def run(self, text):
-		text = re.sub('<p>[\\n\\s]*?\u0002', ' \u0002', text)
-		return re.sub('\u0003[\\n\\s]*?</p>', '\u0003 ', text)
+		text = re.sub('<p>Fig-(\u0002[a-z]*?:[0-9]*?\u0003)</p>', r'\1', text)
+		return text
 
 class FigureExtension(markdown.Extension):
 	def __init__(self, article):
 		self.article = article
 	def extendMarkdown(self, md):
 		self.htmlStash = md.htmlStash
+		md.preprocessors.register(MathPreprocessor(self), 'maths', 28)
 		md.preprocessors.register(FigurePreprocessor(self), 'figures', 29)
 		md.postprocessors.register(FigurePostprocesor(self), 'figures', 31)
 
