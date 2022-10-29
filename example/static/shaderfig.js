@@ -52,6 +52,7 @@ function initFigGL(fig)
 	fig.canvas.height = fig.canvas.offsetHeight;
 	
 	var gl = fig.canvas.getContext("webgl");
+	gl.getExtension('OES_standard_derivatives');
 	//var gl = fig.canvas.getContext("webgl2");
 
 	// todo check if we got the context and show error message
