@@ -1,23 +1,23 @@
-var sporth;
-var num = String.raw`(-?\d+(?:\.\d+)?)`;
-var re = new RegExp(String.raw`_([\w]+) (\d+) palias ?# ?${num} - ${num},? ?${num}? ?\(?([\w]+)?\)?`, 'g');
+let sporth;
+const num = String.raw`(-?\d+(?:\.\d+)?)`;
+const re = new RegExp(String.raw`_([\w]+) (\d+) palias ?# ?${num} - ${num},? ?${num}? ?\(?([\w]+)?\)?`, 'g');
 
-var setP = function(i, p)
+function setP(i, p)
 {
 	if (typeof sporth.setp !== 'undefined') sporth.setp(i, p);
 }
 
-var createSlider = function(container, param, values)
+function createSlider(container, param, values)
 {
-	var paramDiv = document.createElement("div");
+	const paramDiv = document.createElement("div");
 	paramDiv.className = "sliderOut";
 	
-	var label = document.createElement("div");
+	const label = document.createElement("div");
 	label.innerHTML = param.name.replace(/_/g, ' ') + ":";
 	label.className = "sliderLabel";
 	paramDiv.appendChild(label);
 	
-	var slider = document.createElement("input");
+	const slider = document.createElement("input");
 	slider.type = "range";
 	slider.min = param.min;
 	slider.max = param.max;
@@ -25,14 +25,14 @@ var createSlider = function(container, param, values)
 	slider.className = "sliderRange";
 	paramDiv.appendChild(slider);
 	
-	var displ = document.createElement("div");
+	const displ = document.createElement("div");
 	displ.innerHTML = param.value + ' ' + param.units;
 	displ.className = "sliderDispl";
 	paramDiv.appendChild(displ);
 	
 	container.appendChild(paramDiv);
 	
-	slider.addEventListener('input', function(event) {
+	slider.addEventListener('input', (event) => {
 		values[param.name] = slider.value;
 		setP(param.index, slider.value);
 		displ.innerHTML = slider.value + ' ' + param.units;
@@ -46,9 +46,9 @@ export function createSliders(container, script, values = {})
 {
 	container.innerHTML = '';
 	while(true) {
-		var match = re.exec(script);
+		const match = re.exec(script);
 		if (!match) break;
-		var param = {
+		const param = {
 			name: match[1],
 			index: match[2],
 			min: match[3],
@@ -69,9 +69,9 @@ export function createSliders(container, script, values = {})
 export function setPvalues(script, values)
 {
 	while(true) {
-		var match = re.exec(script);
+		const match = re.exec(script);
 		if (!match) break;
-		var param = {
+		const param = {
 			name: match[1],
 			index: match[2],
 			min: match[3],

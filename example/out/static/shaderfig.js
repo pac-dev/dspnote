@@ -1,7 +1,6 @@
-var lock;
+let lock;
 
-
-var vertexCode = `
+const vertexCode = `
 	attribute vec2 vertPos;
 	varying vec2 iUV;
 	void main() {
@@ -10,7 +9,7 @@ var vertexCode = `
 	}
 `
 /*
-var vertexCode = `#version 300 es
+const vertexCode = `#version 300 es
 	in vec2 vertPos;
 	out vec2 iUV;
 	void main() {
@@ -21,7 +20,7 @@ var vertexCode = `#version 300 es
 */
 
 function compileShader(gl, code, type) {
-	var shader = gl.createShader(type);
+	const shader = gl.createShader(type);
 	gl.shaderSource(shader, code);
 	gl.compileShader(shader);
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -32,9 +31,9 @@ function compileShader(gl, code, type) {
 }
 
 function buildShaderProgram(gl, shaderInfo) {
-	var program = gl.createProgram();
-	shaderInfo.forEach(function(desc) {
-		var shader = compileShader(gl, desc.code, desc.type);
+	const program = gl.createProgram();
+	shaderInfo.forEach((desc) => {
+		const shader = compileShader(gl, desc.code, desc.type);
 		if (shader) gl.attachShader(program, shader);
 	});
 	gl.linkProgram(program)
@@ -51,18 +50,18 @@ function initFigGL(fig)
 	fig.canvas.width = fig.canvas.offsetWidth;
 	fig.canvas.height = fig.canvas.offsetHeight;
 	
-	var gl = fig.canvas.getContext("webgl");
+	const gl = fig.canvas.getContext("webgl");
 	gl.getExtension('OES_standard_derivatives');
-	//var gl = fig.canvas.getContext("webgl2");
+	//const gl = fig.canvas.getContext("webgl2");
 
 	// todo check if we got the context and show error message
 
-	var shaderInfo = [
+	const shaderInfo = [
 		{type: gl.VERTEX_SHADER, code: vertexCode},
 		{type: gl.FRAGMENT_SHADER, code: fig.code}
 	];
 	fig.shaderProgram = buildShaderProgram(gl, shaderInfo);
-	var vertexArray = new Float32Array([
+	const vertexArray = new Float32Array([
 		-1, 1, 1, 1, 1, -1,
 		-1, 1, 1, -1, -1, -1
 	]);
@@ -84,14 +83,14 @@ function renderFrame(fig)
 	fig.canvas.width = fig.canvas.offsetWidth;
 	fig.canvas.height = fig.canvas.offsetHeight;
 
-	var gl = fig.gl;
+	const gl = fig.gl;
 	gl.viewport(0, 0, fig.canvas.width, fig.canvas.height);
 	gl.clearColor(0.8, 0.9, 1.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	gl.useProgram(fig.shaderProgram);
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, fig.vertexBuffer);
-	var vertPos = gl.getAttribLocation(fig.shaderProgram, "vertPos");
+	const vertPos = gl.getAttribLocation(fig.shaderProgram, "vertPos");
 	gl.enableVertexAttribArray(vertPos);
 	gl.vertexAttribPointer(vertPos, 2, gl.FLOAT, false, 0, 0);
 	
@@ -114,12 +113,12 @@ function prettyParamName(s)
 	return s;
 }
 
-var num = String.raw`(-?\d+(?:\.\d+)?)`;
-var sliderRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
-var dropdownRe = new RegExp(String.raw`^\s*uniform int ([\w]+); //dspnote param: ((?:[\w]+(?: \| )?)+)$`, 'gm');
+const num = String.raw`(-?\d+(?:\.\d+)?)`;
+const sliderRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
+const dropdownRe = new RegExp(String.raw`^\s*uniform int ([\w]+); //dspnote param: ((?:[\w]+(?: \| )?)+)$`, 'gm');
 function createSlider(fig, match)
 {
-	var param = {
+	const param = {
 		type: "f",
 		name: match[1],
 		min: match[2],
@@ -132,15 +131,15 @@ function createSlider(fig, match)
 
 	fig.params[param.name] = param;
 	
-	var paramDiv = document.createElement("div");
+	const paramDiv = document.createElement("div");
 	paramDiv.className = "sliderOut";
 	
-	var label = document.createElement("div");
+	const label = document.createElement("div");
 	label.innerHTML = prettyParamName(param.name) + ":";
 	label.className = "sliderLabel";
 	paramDiv.appendChild(label);
 	
-	var slider = document.createElement("input");
+	const slider = document.createElement("input");
 	slider.type = "range";
 	slider.min = param.min;
 	slider.max = param.max;
@@ -148,14 +147,14 @@ function createSlider(fig, match)
 	slider.className = "sliderRange";
 	paramDiv.appendChild(slider);
 	
-	var displ = document.createElement("div");
+	const displ = document.createElement("div");
 	displ.innerHTML = param.value;
 	displ.className = "sliderDispl";
 	paramDiv.appendChild(displ);
 	
 	fig.slidersDiv.appendChild(paramDiv);
 	
-	slider.addEventListener('input', function(event) {
+	slider.addEventListener('input', (event) => {
 		activateFig(fig);
 		param.value = slider.value;
 		displ.innerHTML = slider.value;
@@ -167,7 +166,7 @@ function createSlider(fig, match)
 
 function createDropdown(fig, match)
 {
-	var param = {
+	const param = {
 		type: "i",
 		name: match[1],
 		optionString: match[2],
@@ -176,16 +175,16 @@ function createDropdown(fig, match)
 
 	fig.params[param.name] = param;
 	
-	var paramDiv = document.createElement("div");
+	const paramDiv = document.createElement("div");
 	paramDiv.className = "sliderOut";
-	var label = document.createElement("div");
+	const label = document.createElement("div");
 	label.innerHTML = prettyParamName(param.name) + ":";
 	label.className = "sliderLabel";
 	paramDiv.appendChild(label);
-	var options = param.optionString.split("|").map(s => s.trim());
-	var select = document.createElement("select");
+	const options = param.optionString.split("|").map(s => s.trim());
+	const select = document.createElement("select");
 	for (let [optN, optString] of Object.entries(options)) {
-		var option = document.createElement("option");
+		const option = document.createElement("option");
 		option.value = optN;
 		option.innerText = optString;
 		select.appendChild(option);
@@ -195,7 +194,7 @@ function createDropdown(fig, match)
 	paramDiv.appendChild(document.createElement("div"));
 	fig.slidersDiv.appendChild(paramDiv);
 	
-	select.addEventListener('change', function(event) {
+	select.addEventListener('change', (event) => {
 		activateFig(fig);
 		param.value = Number(select.value);
 		fig.dirty = true;
@@ -209,20 +208,20 @@ function createSliders(fig)
 	fig.slidersDiv.innerHTML = '';
 	// uniform int object_mode; //dspnote param: haha | huhu
 	while(true) {
-		var match = dropdownRe.exec(fig.code);
+		const match = dropdownRe.exec(fig.code);
 		if (!match) break;
 		createDropdown(fig, match);
 	}
 	// uniform float vari; //dspnote param: 0 - 1
 	while(true) {
-		var match = sliderRe.exec(fig.code);
+		const match = sliderRe.exec(fig.code);
 		if (!match) break;
 		createSlider(fig, match);
 	}
 }
 
 function isElementInViewport(el) {
-    var rect = el.getBoundingClientRect();
+    const rect = el.getBoundingClientRect();
     return (
 		rect.bottom > 10 && rect.right > 10 &&
         rect.left < (window.innerWidth || document.documentElement.clientWidth)-10 &&
@@ -236,7 +235,7 @@ function animate(fig) {
 		fig.time += fig.timeDiff;
 		renderFrame(fig);
 	}
-	requestAnimationFrame(function(currentTime) {
+	requestAnimationFrame((currentTime) => {
 		fig.timeDiff = (lock.runningFig == fig) ? currentTime - fig.previousTime : 0;
 		fig.previousTime = currentTime;
 		animate(fig);
@@ -267,10 +266,10 @@ function setPlayingStyle(ele, playing)
 function setFull(fig)
 {
 	activateFig(fig);
-	var fullParent = document.getElementById("fullParent");
+	const fullParent = document.getElementById("fullParent");
 	fullParent.classList.toggle("fullEnabled", true);
 	fullParent.prepend(fig.canvas);
-	var fullOff = function() {
+	const fullOff = () => {
 		fig.ele.prepend(fig.canvas);
 		fullParent.classList.toggle("fullEnabled", false);
 		fullParent.removeEventListener("click", fullOff);
@@ -284,9 +283,9 @@ function activateFig(fig)
 {
 	if (fig.activated) return;
 	fig.activated = true;
-	var ele = fig.ele;
-	var i = ele.querySelector("img");
-	var c = document.createElement('canvas');
+	const ele = fig.ele;
+	const i = ele.querySelector("img");
+	const c = document.createElement('canvas');
 	c.attributes["data-img"] = i.attributes["src"].value;
 	ele.replaceChild(c, i);
 	fig.canvas = ele.querySelector("canvas");
@@ -297,7 +296,7 @@ function activateFig(fig)
 
 function initFig(ele)
 {
-	var fig = {
+	const fig = {
 		ele: ele,
 		code: ele.querySelector(".figCode").value,
 		slidersDiv: ele.querySelector(".figSliders"),
@@ -309,17 +308,17 @@ function initFig(ele)
 		dirty: true,
 		activated: false
 	};
-	fig.runButton.addEventListener("click", function(e) {
+	fig.runButton.addEventListener("click", (e) => {
 		if (lock.runningFig == fig)
 			stopFig(fig);
 		else
 			runFig(fig);
 	});
-	fig.fullLink.addEventListener("click", function(e) {
+	fig.fullLink.addEventListener("click", (e) => {
 		e.preventDefault();
 		setFull(fig, true);
 	});
-	window.addEventListener("resize", function(e) {
+	window.addEventListener("resize", (e) => {
 		fig.dirty = true;
 	});
 	setPlayingStyle(ele, lock.runningFig == fig);
@@ -336,16 +335,16 @@ function initFig(ele)
 
 function activateAll(ele, figLock)
 {
-	var article = document.getElementsByClassName('article')[0];
-	var figEles = document.querySelectorAll(".shaderFig");
+	const article = document.getElementsByClassName('article')[0];
+	const figEles = document.querySelectorAll(".shaderFig");
 	article.replaceChildren(...figEles);
-	for (var ele of figEles) {
+	for (const ele of figEles) {
 		activateFig(ele.data_fig);
 	}
 	function* fullscreenFigs() {
-		var allCanvases = document.querySelectorAll(".shaderFig canvas");
+		const allCanvases = document.querySelectorAll(".shaderFig canvas");
 		document.documentElement.classList.add("fullScreen");
-		for (var ele of allCanvases) {
+		for (const ele of allCanvases) {
 			if ("data-img" in ele.attributes === false)
 				continue;
 			ele.classList.add("fullScreen");
@@ -361,7 +360,7 @@ function activateAll(ele, figLock)
 export function init(ele, figLock)
 {
 	lock = figLock;
-	var allFigs = ele.querySelectorAll(".shaderFig");
+	const allFigs = ele.querySelectorAll(".shaderFig");
 	allFigs.forEach(initFig);
-	window.activateAllShaderFigs = function() { activateAll(ele, figLock); };
+	window.activateAllShaderFigs = () => { activateAll(ele, figLock); };
 }

@@ -1,16 +1,16 @@
 import * as SporthParams from "./sporthparams.js";
 import SporthAL from './sporthal.js'
-var lock;
+let lock;
 
-var sporth = {gotError: false};
-SporthAL().then(function(mod) {
+const sporth = {gotError: false};
+SporthAL().then((mod) => {
 	mod.cwrap('sporthal_init', 'number')();
 	sporth.compile = mod.cwrap('sporthal_compile', 'number', ['string']);
 	sporth.start = mod.cwrap('sporthal_start', 'number');
 	sporth.stop = mod.cwrap('sporthal_stop', 'number');
 	sporth.getp = mod.cwrap('sporthal_getp', 'number', ['number']);
 	sporth.setp = mod.cwrap('sporthal_setp', 'number', ['number', 'number']);
-	mod["printErr"] = function(text) {
+	mod["printErr"] = (text) => {
 		alert(text);
 		gotError = true;
 	};
@@ -19,8 +19,8 @@ SporthAL().then(function(mod) {
 function setPlayingStyle(ele, playing)
 {
 	ele.querySelector(".figRun, .figStop").className = playing ? "figStop" : "figRun";
-	var allRanges = ele.querySelectorAll("input[type='range']");
-	allRanges.forEach(function(range) {
+	const allRanges = ele.querySelectorAll("input[type='range']");
+	allRanges.forEach((range) => {
 		range.disabled = !playing;
 	});
 	ele.querySelector(".figSliders").classList.toggle("off", !playing);
@@ -51,9 +51,9 @@ export function init(ele, figLock)
 {
 	lock = figLock;
 	SporthParams.init(sporth);
-	var allSporthDiagrams = ele.querySelectorAll(".sporthDiagram");
-	allSporthDiagrams.forEach(function(ele) {
-		var fig = {
+	const allSporthDiagrams = ele.querySelectorAll(".sporthDiagram");
+	allSporthDiagrams.forEach((ele) => {
+		const fig = {
 			ele: ele,
 			code: ele.querySelector(".figCode").value,
 			slidersDiv: ele.querySelector(".figSliders"),
@@ -61,7 +61,7 @@ export function init(ele, figLock)
 			editLink: ele.querySelector(".figEdit"),
 		};
 		fig.values = SporthParams.createSliders(fig.slidersDiv, fig.code);
-		fig.runButton.addEventListener("click", function(e) {
+		fig.runButton.addEventListener("click", (e) => {
 			if (lock.runningFig == fig)
 				stopFig(fig);
 			else
