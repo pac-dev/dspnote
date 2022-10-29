@@ -57,7 +57,7 @@ class Article:
 	
 	def generate(self):
 		print('generating '+self.basename)
-		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', FigureExtension(self)])
+		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', 'admonition', FigureExtension(self)])
 		self.numImageFallbacks = 0
 		content = md.convert(self.src)
 		self.meta = {k : v[0] for k, v in  md.Meta.items()}
