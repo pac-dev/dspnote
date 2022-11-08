@@ -71,6 +71,7 @@ class ShaderFig(Figure):
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'runnable': re.search( r'(?:\nrunnable:\s(.*?)\n|$)', src, re.S).group(1) or "false",
 			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
+			'jscode': ''
 		}
 		cmatch = re.search( r'\ncode:\n```\n(.*?)\n```', src, re.M|re.S)
 		if (cmatch):
@@ -80,6 +81,9 @@ class ShaderFig(Figure):
 			self.data['code'] = "((file: " + srcFile + "))"
 			if (self.data['url'] == '#'):
 				self.data['url'] = srcFile
+		jsmatch = re.search( r'\njscode:\n```\n(.*?)\n```', src, re.M|re.S)
+		if (jsmatch):
+			self.data['jscode'] = jsmatch.group(1)
 		# todo this obviously does not work:
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('dspnote param: ')
 		self.data['runnableClass'] = 'runnable' if self.data['runnable']=='true' else ""
@@ -94,8 +98,10 @@ class ShaderFig(Figure):
 	figTemplate = """
 
 <div class="figure shaderFig {runnableClass}">
-	<textarea class="figCode">{code}</textarea>
-	{figElement}
+	<textarea class="figCode">{code}</textarea><textarea class="jsCode">{jscode}</textarea>
+	<div class="figGraphics">
+		{figElement}
+	</div>
 	<div class="figSubPanel">
 		<div class="figRun"></div>
 		<div class="figSliders">

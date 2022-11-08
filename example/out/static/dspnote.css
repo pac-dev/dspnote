@@ -81,10 +81,10 @@ h3 {
 }
 
 a { color: #004276; }
-.links { margin-bottom: 20px; }
-.links li { margin-bottom: 14px; }
+li { margin-bottom: 14px; }
+.tightList li { margin-bottom: 0; }
+.tightList p { margin-bottom: 0; }
 .footer { text-align: center; }
-.prelist { margin-bottom: 0; }
 
 .subtitle {
 	font-size: 14px;
@@ -116,7 +116,7 @@ sup {
 	position: relative;
 }
 
-.figure .figCode, .figure .figUrl {
+.figure .figCode, .jsCode, .figure .figUrl {
 	display: none;
 }
 

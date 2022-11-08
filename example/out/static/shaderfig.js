@@ -114,6 +114,7 @@ function prettyParamName(s)
 }
 
 const num = String.raw`(-?\d+(?:\.\d+)?)`;
+const hiddenRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param$`, 'gm');
 const sliderRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
 const dropdownRe = new RegExp(String.raw`^\s*uniform int ([\w]+); //dspnote param: ((?:[\w]+(?: \| )?)+)$`, 'gm');
 function createSlider(fig, match)
@@ -162,6 +163,7 @@ function createSlider(fig, match)
 	});
 	
 	slider.value = param.value;
+	param.slider = slider;
 }
 
 function createDropdown(fig, match)
@@ -169,7 +171,7 @@ function createDropdown(fig, match)
 	const param = {
 		type: "i",
 		name: match[1],
-		optionString: match[2],
+		optionString: prettyParamName(match[2]),
 		value: 0,
 	};
 
@@ -218,6 +220,12 @@ function createSliders(fig)
 		if (!match) break;
 		createSlider(fig, match);
 	}
+	// uniform float vari; //dspnote param
+	while(true) {
+		const match = hiddenRe.exec(fig.code);
+		if (!match) break;
+		fig.params[match[1]] = { name: match[1], type: "f", value: 0 };
+	}
 }
 
 function isElementInViewport(el) {
@@ -233,6 +241,7 @@ function animate(fig) {
 	if (isElementInViewport(fig.canvas) && (lock.runningFig == fig || fig.dirty)) {
 		fig.dirty = false;
 		fig.time += fig.timeDiff;
+		if (fig.onrender) fig.onrender();
 		renderFrame(fig);
 	}
 	requestAnimationFrame((currentTime) => {
@@ -283,7 +292,7 @@ function activateFig(fig)
 {
 	if (fig.activated) return;
 	fig.activated = true;
-	const ele = fig.ele;
+	const ele = fig.graphicsDiv;
 	const i = ele.querySelector("img");
 	const c = document.createElement('canvas');
 	c.attributes["data-img"] = i.attributes["src"].value;
@@ -299,7 +308,9 @@ function initFig(ele)
 	const fig = {
 		ele: ele,
 		code: ele.querySelector(".figCode").value,
+		jsCode: ele.querySelector(".jsCode").value,
 		slidersDiv: ele.querySelector(".figSliders"),
+		graphicsDiv: ele.querySelector(".figGraphics"),
 		runButton: ele.querySelector(".figRun"),
 		fullLink: ele.querySelector(".figFull"),
 		time: 0,
@@ -308,6 +319,7 @@ function initFig(ele)
 		dirty: true,
 		activated: false
 	};
+	fig.activate = () => activateFig(fig);
 	fig.runButton.addEventListener("click", (e) => {
 		if (lock.runningFig == fig)
 			stopFig(fig);
@@ -324,7 +336,9 @@ function initFig(ele)
 	setPlayingStyle(ele, lock.runningFig == fig);
 	createSliders(fig);
 	ele.data_fig = fig;
+	Function('fig', fig.jsCode)(fig);
 	if (ele.querySelector("canvas")) {
+		// no fallback image: activate immediately
 		fig.activated = true;
 		fig.canvas = ele.querySelector("canvas");
 		fig.previousTime = performance.now();

@@ -21,8 +21,7 @@ def renderFigureMatch(match, md):
 class FigurePreprocessor(markdown.preprocessors.Preprocessor):
 	def run(self, lines):
 		content = "\n".join(lines)
-		content = re.sub(r'^figure:\s(.*?)code:\n```\n+(.*?)```\n', lambda m: renderFigureMatch(m, self.md), content, 0, re.M|re.S)
-		content = re.sub(r'^figure:\s(.*?)\n\n', lambda m: renderFigureMatch(m, self.md), content, 0, re.M|re.S)
+		content = re.sub(r'^figure:\s(.*?)(code:\n```\n+(.*?)```)?(jscode:\n```\n+(.*?)```)?\n\n', lambda m: renderFigureMatch(m, self.md), content, 0, re.M|re.S)
 		return content.split("\n")
 
 class MathPreprocessor(markdown.preprocessors.Preprocessor):
