@@ -1,7 +1,7 @@
 import  __main__
 from .figure import SporthDiagram, ShaderFig, Image, Video
-import os, re, pathlib, html, codecs, logging, distutils.dir_util
-import markdown, jinja2, selenium.webdriver as webdriver
+import re, pathlib, html, codecs, logging, distutils.dir_util
+import markdown, jinja2
 
 log = logging.getLogger(__name__)
 
@@ -56,8 +56,8 @@ class Article:
 	
 	def render(self):
 		print('rendering '+self.basename)
+		self.figures = []
 		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', 'admonition', 'toc', FigureExtension(self)])
-		self.numImageFallbacks = 0
 		src = self.srcpath.read_text('utf-8')
 		content = md.convert(src)
 		self.meta = {k : v[0] for k, v in  md.Meta.items()}
@@ -74,27 +74,38 @@ class Article:
 			"res": self.config["publicResPath"],
 			"config": self.config,
 		}
-		return template.render(templateData)
+		self.output = template.render(templateData)
+		return self.output
 	
-	def generate(self):
-		rendered = self.render()
+	def export(self):
+		if not hasattr(self, 'output'): self.render()
 		self.outDir.mkdir(parents=True, exist_ok=True)
 		index = codecs.open(self.outPath, 'w+', "utf-8")
-		index.write(rendered)
+		index.write(self.output)
 		index.close()
 		if self.assetsDir.is_dir():
 			distutils.dir_util.copy_tree(str(self.assetsDir), str(self.outDir))
 	
 	def makeFigshots(self):
-		if all([os.path.isfile(self.outDir / ('shaderfig_'+str(n+1)+'.png')) for n in range(self.numImageFallbacks)]): return
+		try:
+			import selenium.webdriver as webdriver
+		except ImportError:
+			raise RuntimeError(
+				'The "figshot" feature requires an additional dependency (selenium).\n'+
+				'run: pip install .[figshot]'
+			)
+		shaders = [f for f in self.figures if f.figureType == 'shaderFig']
+		if len([s for s in shaders if hasattr(s, 'fallback_path')]) == 0: return
 		options = webdriver.ChromeOptions()
 		options.add_argument('--headless=chrome')
 		browser = webdriver.Chrome(options=options)
 		browser.set_window_size(700, 445)
-		browser.get('http://localhost:8033/notes/' + self.basename)
+		browser.get('http://localhost:8081' + self.urlPath)
 		browser.execute_script("activateAllShaderFigs()")
-		while(True):
+		for s in shaders:
 			img = browser.execute_script("return fullscreenFig.next()")
-			if (img['done']): break
-			browser.save_screenshot(str(self.outDir / img['value']))
+			if (img['done']): raise RuntimeError('Browser did not return correct number of shaders')
+			if not hasattr(s, 'fallback_path'): continue
+			s.fallback_path.parent.mkdir(parents=True, exist_ok=True)
+			browser.save_screenshot(str(s.fallback_path))
 		browser.quit()

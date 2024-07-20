@@ -23,6 +23,7 @@ This installs `dspnote` along with its dependencies. The `dspnote` command can `
 # Assuming "example" is the correct path the example project:
 dspnote serve example # serves locally for development and testing
 dspnote build example # builds according to example/config.yml
+dspnote figshot example # generates shader image fallbacks (requires Selenium)
 ```
 
 For a more complex project using DSPNote, see [pac-dev/notes](https://github.com/pac-dev/notes).

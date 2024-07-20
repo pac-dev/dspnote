@@ -8,8 +8,11 @@ def trimLines(txt: str):
 	return '\n'.join(txt)
 
 class Figure:
-	def __init__(self):
+	def __init__(self, src, md):
 		self.data = { }
+		self.md = md
+		self.figureType = re.search( r'^figure:\s(.*?)$', src, re.M|re.S).group(1)
+		md.article.figures.append(self)
 
 	def render(self):
 		ret = '\n\nFig-'+self.md.htmlStash.store(self.figTemplate.format(**self.data))+'\n\n'
@@ -27,7 +30,7 @@ class Figure:
 
 class SporthDiagram(Figure):
 	def __init__(self, src, md):
-		self.md = md
+		super().__init__(src, md)
 		self.data = {
 			'diagram': re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1),
 			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
@@ -66,13 +69,14 @@ class SporthDiagram(Figure):
 
 class ShaderFig(Figure):
 	def __init__(self, src, md):
-		self.md = md
+		super().__init__(src, md)
 		self.data = {
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'runnable': re.search( r'(?:\nrunnable:\s(.*?)\n|$)', src, re.S).group(1) or "false",
 			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
 			'jscode': ''
 		}
+		srcFile = None
 		cmatch = re.search( r'\ncode:\n```\n(.*?)\n```', src, re.M|re.S)
 		if (cmatch):
 			self.data['code'] = cmatch.group(1)
@@ -87,13 +91,12 @@ class ShaderFig(Figure):
 		# todo this obviously does not work:
 		self.data['placeholders'] = self.placeholder * self.data['code'].count('dspnote param: ')
 		self.data['runnableClass'] = 'runnable' if self.data['runnable']=='true' else ""
-		fallback = re.search( r'(?:\nfallback:\s(.*?)\n|$)', src, re.S).group(1) or 'true'
-		fallback = (fallback == 'true')
-		if (fallback):
-			md.article.numImageFallbacks += 1
-			self.data['figElement'] = '<img src="shaderfig_' + str(md.article.numImageFallbacks) + '.png">'
-		else:
-			self.data['figElement'] = '<canvas>canvas</canvas>'
+		self.data['figElement'] = '<canvas>canvas</canvas>'
+		want_fallback = re.search( r'(?:\nfallback:\s(.*?)\n|$)', src, re.S).group(1) or 'true'
+		if want_fallback == 'true':
+			fallback_name = (srcFile or 'shaderfig_' + str(len(md.article.figures))) + '.png'
+			self.fallback_path = md.article.assetsDir / 'generated' / fallback_name
+			if (self.fallback_path.exists()): self.data['figElement'] = '<img src="generated/'+fallback_name+'">'
 
 	figTemplate = """
 
@@ -127,7 +130,7 @@ class ShaderFig(Figure):
 
 class Image(Figure):
 	def __init__(self, src, md):
-		self.md = md
+		super().__init__(src, md)
 		self.data = {
 			'image': re.search( r'^image:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
@@ -142,7 +145,7 @@ class Image(Figure):
 
 class Video(Figure):
 	def __init__(self, src, md):
-		self.md = md
+		super().__init__(src, md)
 		self.data = {
 			'video': re.search( r'^video:\s(.*?)$', src, re.M|re.S).group(1),
 			'poster': re.search( r'^poster:\s(.*?)$', src, re.M|re.S).group(1),

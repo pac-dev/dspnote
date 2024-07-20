@@ -55,7 +55,6 @@ Example of a ShaderFig:
 
 figure: shaderFig
 caption: Log-polar tiling in 2D. Controls perform translation before mapping. Red axis: $\rho$, green axis: $\theta$
-fallback: false
 code:
 ```
 	precision mediump float;

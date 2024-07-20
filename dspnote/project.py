@@ -25,25 +25,14 @@ class Project:
 		config["outDir"] = self.source_dir / config["outDir"]
 		return config
 	
-	def startLocalServer(self):
-		os.chdir(pathlib.Path(self.config["outDir"]).parent)
-		self.httpd = socketserver.TCPServer(("", 8033), http.server.SimpleHTTPRequestHandler)
-		thread = threading.Thread(target=self.httpd.serve_forever)
-		thread.start()
-	
 	def generate(self):
 		distutils.dir_util.copy_tree(
 			str(self.config["staticDir"]), 
 			str(self.config["outDir"] / "static")
 		)
-		for art in self.arts:
-			art.generate()
-		self.startLocalServer()
-		for art in self.arts:
-			art.makeFigshots()
-		self.httpd.shutdown()
+		for art in self.arts: art.export()
 	
-	def serve(self):
+	def getServer(self):
 		arts = self.arts
 		config = self.config
 		class NoteHandler(RangeHandler):
@@ -77,4 +66,16 @@ class Project:
 		print('Please disable cache in the browser console.') # or send no-cache headers...
 		print('Serving on http://localhost:8081')
 		httpd = http.server.HTTPServer(('localhost', 8081), NoteHandler)
+		return httpd
+	
+	def makeFigshots(self):
+		for art in self.arts: art.render()
+		httpd = self.getServer()
+		thread = threading.Thread(target=httpd.serve_forever)
+		thread.start()
+		for art in self.arts: art.makeFigshots()
+		httpd.shutdown()
+
+	def serve(self):
+		httpd = self.getServer()
 		httpd.serve_forever()

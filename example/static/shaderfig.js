@@ -295,7 +295,6 @@ function activateFig(fig)
 	const ele = fig.graphicsDiv;
 	const i = ele.querySelector("img");
 	const c = document.createElement('canvas');
-	c.attributes["data-img"] = i.attributes["src"].value;
 	ele.replaceChild(c, i);
 	fig.canvas = ele.querySelector("canvas");
 	fig.previousTime = performance.now();
@@ -347,7 +346,7 @@ function initFig(ele)
 	}
 }
 
-function activateAll(ele, figLock)
+function activateAll()
 {
 	const article = document.getElementsByClassName('article')[0];
 	const figEles = document.querySelectorAll(".shaderFig");
@@ -359,11 +358,9 @@ function activateAll(ele, figLock)
 		const allCanvases = document.querySelectorAll(".shaderFig canvas");
 		document.documentElement.classList.add("fullScreen");
 		for (const ele of allCanvases) {
-			if ("data-img" in ele.attributes === false)
-				continue;
 			ele.classList.add("fullScreen");
 			window.dispatchEvent(new Event('resize'));
-			yield ele.attributes["data-img"];
+			yield true;
 			ele.classList.remove("fullScreen");
 		}
 		document.documentElement.classList.remove("fullScreen");
@@ -376,5 +373,5 @@ export function init(ele, figLock)
 	lock = figLock;
 	const allFigs = ele.querySelectorAll(".shaderFig");
 	allFigs.forEach(initFig);
-	window.activateAllShaderFigs = () => { activateAll(ele, figLock); };
+	window.activateAllShaderFigs = () => { activateAll(); };
 }
