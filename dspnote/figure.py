@@ -135,9 +135,7 @@ class Image(Figure):
 
 	figTemplate = """
 
-<div class="figure image">
-	<div class="figDiagram"><img src="{image}"></div>
-</div>
+<div class="figure image"><div class="figDiagram"><img src="{image}"></div></div>
 
 	"""
 

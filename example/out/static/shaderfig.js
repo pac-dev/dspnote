@@ -113,9 +113,11 @@ function prettyParamName(s)
 	return s;
 }
 
-const num = String.raw`(-?\d+(?:\.\d+)?)`;
 const hiddenRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param$`, 'gm');
-const sliderRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param: ${num} - ${num},? ?${num}?$`, 'gm');
+const num = String.raw`-?\d+(?:\.\d+)?`;
+const def = String.raw`(?:, (?<def>${num}))?`;
+const unit = String.raw`(?: \((?<unit>[^\)]+)\))?`;
+const sliderRe = new RegExp(String.raw`^\s*uniform float ([\w]+); //dspnote param: (${num}) - (${num})${def}${unit}$`, 'gm');
 const dropdownRe = new RegExp(String.raw`^\s*uniform int ([\w]+); //dspnote param: ((?:[\w]+(?: \| )?)+)$`, 'gm');
 function createSlider(fig, match)
 {
@@ -125,10 +127,8 @@ function createSlider(fig, match)
 		min: match[2],
 		max: match[3],
 	};
-	if (match[4] !== undefined)
-		param.value = match[4];
-	else
-		param.value = param.min;
+	param.value = match.groups.def ?? param.min;
+	param.unit = match.groups.unit ?? '';
 
 	fig.params[param.name] = param;
 	
@@ -149,7 +149,7 @@ function createSlider(fig, match)
 	paramDiv.appendChild(slider);
 	
 	const displ = document.createElement("div");
-	displ.innerHTML = param.value;
+	displ.innerHTML = param.value + ' ' + param.unit;
 	displ.className = "sliderDispl";
 	paramDiv.appendChild(displ);
 	
@@ -158,7 +158,7 @@ function createSlider(fig, match)
 	slider.addEventListener('input', (event) => {
 		activateFig(fig);
 		param.value = slider.value;
-		displ.innerHTML = slider.value;
+		displ.innerHTML = slider.value + ' ' + param.unit;
 		fig.dirty = true;
 	});
 	

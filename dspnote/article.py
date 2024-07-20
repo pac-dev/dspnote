@@ -49,16 +49,17 @@ class Article:
 		self.srcpath = pathlib.Path(path)
 		self.config = config
 		self.basename = self.srcpath.stem
-		self.src = self.srcpath.read_text()
 		self.outDir = pathlib.Path(config["outDir"]) / self.basename
 		self.outPath = self.outDir / "index.html"
 		self.assetsDir = self.srcpath.parent / self.basename
+		self.urlPath = config['urlPrefix'] + self.basename + '/'
 	
-	def generate(self):
-		print('generating '+self.basename)
-		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', 'admonition', FigureExtension(self)])
+	def render(self):
+		print('rendering '+self.basename)
+		md = markdown.Markdown(extensions = ['meta', 'extra', 'codehilite', 'admonition', 'toc', FigureExtension(self)])
 		self.numImageFallbacks = 0
-		content = md.convert(self.src)
+		src = self.srcpath.read_text('utf-8')
+		content = md.convert(src)
 		self.meta = {k : v[0] for k, v in  md.Meta.items()}
 		self.meta["author"] = html.escape(self.meta["author"])
 		def renderFileMatch(match):
@@ -73,9 +74,13 @@ class Article:
 			"res": self.config["publicResPath"],
 			"config": self.config,
 		}
+		return template.render(templateData)
+	
+	def generate(self):
+		rendered = self.render()
 		self.outDir.mkdir(parents=True, exist_ok=True)
 		index = codecs.open(self.outPath, 'w+', "utf-8")
-		index.write(template.render(templateData))
+		index.write(rendered)
 		index.close()
 		if self.assetsDir.is_dir():
 			distutils.dir_util.copy_tree(str(self.assetsDir), str(self.outDir))
@@ -83,8 +88,8 @@ class Article:
 	def makeFigshots(self):
 		if all([os.path.isfile(self.outDir / ('shaderfig_'+str(n+1)+'.png')) for n in range(self.numImageFallbacks)]): return
 		options = webdriver.ChromeOptions()
-		options.add_argument('headless')
-		browser = webdriver.Chrome(executable_path=self.config["chromeDriver"], chrome_options=options)
+		options.add_argument('--headless=chrome')
+		browser = webdriver.Chrome(options=options)
 		browser.set_window_size(700, 445)
 		browser.get('http://localhost:8033/notes/' + self.basename)
 		browser.execute_script("activateAllShaderFigs()")

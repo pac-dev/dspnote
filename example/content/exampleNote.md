@@ -1,8 +1,8 @@
-Title: DSPnote Example Note
+Title: DSPNote Example Note
 Author: Test Man <testman@example.com>
 Created: November 2018
 
-# DSPnote Example
+# DSPNote Example
 
 Content is written in [Markdown](https://daringfireball.net/projects/markdown/syntax), with some extra features. Examples of these features are given below. Note: when viewing the source file on Github, it's better to look at the [raw file](https://raw.githubusercontent.com/pac-dev/dspnote/master/example/content/exampleNote.md).
 

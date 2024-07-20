@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dspnote"
+version = "2.0"
+authors = [{ name="Pierre Cusa", email="pierre@osar.fr" }]
+description = "Static Site Generator with Interactive Figures"
+readme = "readme.md"
+requires-python = ">=3.9"
+dependencies = [
+  "jinja2==3.1.4",
+  "pyyaml==6.0.1",
+  "markdown==3.6",
+  "pygments==2.18.0",
+  "selenium==4.22.0",
+]
+
+[project.scripts]
+dspnote = "dspnote.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/pac-dev/dspnote"

@@ -277,3 +277,9 @@ canvas.fullScreen {
 }
 
 .katex { white-space: nowrap; }
+.katex-display > .katex {
+	overflow-x: auto;
+	overflow-y: clip;
+	padding: 2px 0;
+	margin: -2px 0;
+}
