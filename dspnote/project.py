@@ -23,6 +23,7 @@ class Project:
 		config["contentDir"] = self.source_dir / config["contentDir"]
 		config["staticDir"] = self.source_dir / config["staticDir"]
 		config["outDir"] = self.source_dir / config["outDir"]
+		config["queryString"] = config.get("queryString", "")
 		return config
 	
 	def generate(self):

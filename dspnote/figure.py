@@ -9,7 +9,7 @@ def trimLines(txt: str):
 
 class Figure:
 	def __init__(self, src, md):
-		self.data = { }
+		self.data = dict(md.article.config)
 		self.md = md
 		self.figureType = re.search( r'^figure:\s(.*?)$', src, re.M|re.S).group(1)
 		md.article.figures.append(self)
@@ -31,7 +31,7 @@ class Figure:
 class SporthDiagram(Figure):
 	def __init__(self, src, md):
 		super().__init__(src, md)
-		self.data = {
+		self.data |= {
 			'diagram': re.search( r'^diagram:\s(.*?)$', src, re.M|re.S).group(1),
 			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
@@ -44,7 +44,7 @@ class SporthDiagram(Figure):
 
 <div class="figure runnable sporthDiagram">
 	<textarea class="figCode">{code}</textarea>
-	<div class="figDiagram"><img src="{diagram}"></div>
+	<div class="figDiagram"><img src="{diagram}{queryString}"></div>
 	<div class="figSubPanel">
 		<div class="figRun"></div>
 		<div class="figSliders off">
@@ -70,7 +70,7 @@ class SporthDiagram(Figure):
 class ShaderFig(Figure):
 	def __init__(self, src, md):
 		super().__init__(src, md)
-		self.data = {
+		self.data |= {
 			'caption': re.search( r'(?:\ncaption:\s(.*?)\n|$)', src, re.S).group(1) or "",
 			'runnable': re.search( r'(?:\nrunnable:\s(.*?)\n|$)', src, re.S).group(1) or "false",
 			'url': re.search( r'(?:\nurl:\s(.*?)\n|$)', src, re.S).group(1) or "#",
@@ -96,7 +96,9 @@ class ShaderFig(Figure):
 		if want_fallback == 'true':
 			fallback_name = (srcFile or 'shaderfig_' + str(len(md.article.figures))) + '.png'
 			self.fallback_path = md.article.assetsDir / 'generated' / fallback_name
-			if (self.fallback_path.exists()): self.data['figElement'] = '<img src="generated/'+fallback_name+'">'
+			if (self.fallback_path.exists()):
+				queryString = md.article.config['queryString']
+				self.data['figElement'] = f'<img src="generated/{fallback_name}{queryString}">'
 
 	figTemplate = """
 
@@ -131,14 +133,14 @@ class ShaderFig(Figure):
 class Image(Figure):
 	def __init__(self, src, md):
 		super().__init__(src, md)
-		self.data = {
+		self.data |= {
 			'image': re.search( r'^image:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
 		}
 
 	figTemplate = """
 
-<div class="figure image"><div class="figDiagram"><img src="{image}"></div></div>
+<div class="figure image"><div class="figDiagram"><img src="{image}{queryString}"></div></div>
 
 	"""
 
@@ -146,7 +148,7 @@ class Image(Figure):
 class Video(Figure):
 	def __init__(self, src, md):
 		super().__init__(src, md)
-		self.data = {
+		self.data |= {
 			'video': re.search( r'^video:\s(.*?)$', src, re.M|re.S).group(1),
 			'poster': re.search( r'^poster:\s(.*?)$', src, re.M|re.S).group(1),
 			'caption': re.search( r'(?:\ncaption:\s(.*?)$|$)', src, re.S).group(1) or "",
@@ -156,9 +158,9 @@ class Video(Figure):
 
 <div class="figure video">
 	<div class="figDiagram">
-		<img src="{poster}">
+		<img src="{poster}{queryString}">
 		<video loop allowfullscreen onclick="this.paused?this.play():this.pause()">
-			<source src="{video}" type="video/mp4">
+			<source src="{video}{queryString}" type="video/mp4">
 		</video>
 	</div>
 </div>

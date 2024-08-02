@@ -68,11 +68,10 @@ class Article:
 		content = re.sub(r'\(\(file:\s(.*?)\)\)', renderFileMatch, content)
 		templateEnv = jinja2.Environment(loader = jinja2.FileSystemLoader(str(self.config["templateDir"])))
 		template = templateEnv.get_template("article.jinja")
-		templateData = {
+		templateData = self.config | {
 			"content": content,
 			"meta": self.meta,
-			"res": self.config["publicResPath"],
-			"config": self.config,
+			"res": self.config["publicResPath"]
 		}
 		self.output = template.render(templateData)
 		return self.output
